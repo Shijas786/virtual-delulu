@@ -9,3 +9,5 @@ dist
 presentation-assets/seg-*.mp4
 generated-assets/
 .vercel
+.env
+.env*.local

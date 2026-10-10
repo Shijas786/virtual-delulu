@@ -4,6 +4,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
+## 2026-10-11T00:19:00+05:30 — Secure environment configuration & .env.example
+
+- Changed: `.gitignore`, `.env.example`
+- Why: Configured OpenAI environment variables for Vercel deployment; added `.env.example` template for development setup while strictly ignoring `.env` to protect secret keys from exposure.
+- Validation: Verified `.env` is ignored by Git; verified Vercel production, preview, and development environments store `OPENAI_API_KEY`.
+- Limitations: None.
+
 ## 2026-10-11T00:08:00+05:30 — Delulu aesthetic cuteness boost & OpenAI LLM/Audio migration
 
 - Changed: `src/puppet-stage.ts`, `server/llm.ts`, `server/tts.ts`, `server/asset-generator.ts`, `server/index.ts`, `server/openai.test.ts`, `SUBMISSION.md`, `README.md`
