@@ -22,7 +22,7 @@ import { ASSET_SPEC_JSON_SCHEMA, type AssetSpec } from "./protocol.ts";
 import { SYSTEM_PROMPT } from "./asset-generator-prompt.ts";
 
 const ANTHROPIC_ASSET_MODEL = "claude-opus-4-7";
-const OPENAI_ASSET_MODEL = process.env.OPENAI_ASSET_MODEL ?? "gpt-4o";
+const OPENAI_ASSET_MODEL = process.env.OPENAI_ASSET_MODEL ?? "gpt-6-astra";
 
 export class AssetGenerator {
   private anthropicClient: Anthropic | null = null;

@@ -4,6 +4,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
+## 2026-10-11T01:44:00+05:30 — Upgrade primary LLM model and 3D asset generator to GPT-6 Astra
+
+- Changed: `server/index.ts`, `server/llm.ts`, `server/asset-generator.ts`, `server/openai.test.ts`, `index.html`, `.env`
+- Why: Upgraded default large brain model and parametric 3D asset generation model from GPT-4o to OpenAI's advanced agentic model `gpt-6-astra` for richer, faster reasoning and high-fidelity scene direction.
+- Validation: Verified live JSON structured completion from `gpt-6-astra`; verified 53 `bun test` suite passing; verified asset generation and speech generation loop.
+- Limitations: None.
+
 ## 2026-10-11T01:29:00+05:30 — Align canonical puppet theater architecture and visuals with rhmoller reference
 
 - Changed: `src/puppet.ts`, `src/puppet-stage.ts`, `src/landing.ts`, `src/hud.ts`, `index.html`
