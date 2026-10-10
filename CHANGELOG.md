@@ -4,6 +4,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
+## 2026-10-10T23:46:00+05:30 — Deploy web client to Vercel
+
+- Changed: `SUBMISSION.md`, `README.md`, `.gitignore`
+- Why: Deployed web client to Vercel (`https://virtual-delulu.vercel.app`) for live hackathon demonstration.
+- Validation: Production build passed with Vite v8; HTTP 200 confirmed on `https://virtual-delulu.vercel.app`.
+- Limitations: Full real-time AI puppet dialogue requires backend WebSocket connection; client connects locally or to configured backend endpoint.
+
 ## 2026-10-10T23:28:00+05:30 — Theme and Delulu character integrated
 
 - Changed: `index.html`, `src/hud.ts`, `src/landing.ts`, `src/puppet-stage.ts`, `src/puppet.ts`

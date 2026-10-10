@@ -8,3 +8,4 @@ dist
 .claude/
 presentation-assets/seg-*.mp4
 generated-assets/
+.vercel

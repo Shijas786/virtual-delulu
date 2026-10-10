@@ -8,8 +8,8 @@ Complete this file during the hackathon and use it to prepare your submission th
 - **Short description:** A virtual puppet theater running entirely in the browser. Your webcam tracks your hand with MediaPipe and animates a hand-puppet on stage. Opposite you, Delulu — a cheerful AI-driven ghost character from Kerala — reacts to what you say and do in real time, driven by Claude Opus 4.7. The AI puppet speaks (ElevenLabs TTS), generates brand-new 3D scene props on demand, and reads your body language to adjust its performance.
 - **Code repository URL:** https://github.com/Shijas786/virtual-delulu
 - **Final submitted implementation commit SHA:** TODO — fill in after final commit
-- **Working demo URL or local demo steps:** Run locally with `bun install && bun run dev:server` + `bun run dev`; open `http://localhost:5173`, grant webcam + mic access, raise a hand.
-- **Demo access requirements:** `ANTHROPIC_API_KEY` required; `ELEVENLABS_API_KEY` optional (falls back to browser TTS).
+- **Working demo URL or local demo steps:** Live demo: https://virtual-delulu.vercel.app | Local demo: `bun install && bun run dev:server` + `bun run dev` (open `http://localhost:5173`, grant webcam + mic access, raise hand).
+- **Demo access requirements:** `ANTHROPIC_API_KEY` required for AI puppet backend; `ELEVENLABS_API_KEY` optional (falls back to browser TTS). Web client runs live at Vercel URL.
 
 ## Participants
 

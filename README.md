@@ -12,7 +12,7 @@ and do in real time, driven by Claude Opus 4.7.
 - **Project name:** Virtual Delulu — Puppet Theater
 - **Short description:** An AI co-creative puppet theater in the browser. Raise a hand, speak, and Delulu (an AI hand-puppet) performs, reacts, and generates brand-new 3D props on demand — all in real time.
 - **Team:** Shijas T (@Shijas786), Allen P. Jison (@LyfSeeker)
-- **Working demo:** `bun install && bun run dev:server && bun run dev` → open `http://localhost:5173`, grant webcam + mic, raise a hand.
+- **Working demo:** https://virtual-delulu.vercel.app (or locally: `bun install && bun run dev:server && bun run dev` → `http://localhost:5173`). Grant webcam + mic, raise a hand.
 - **Technology stack:** Bun · Vite · TypeScript · Three.js · MediaPipe Hands · Web Speech API · Anthropic Claude Opus 4.7 · ElevenLabs TTS
 
 See [SUBMISSION.md](./SUBMISSION.md) · [CHANGELOG.md](./CHANGELOG.md) · [AI_USAGE.md](./AI_USAGE.md) · [RULES.md](./RULES.md)
