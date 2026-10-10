@@ -264,7 +264,7 @@ export function showLanding(): Promise<LandingResult> {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
-            text: "Namaskaaram! I'm Delulu. Shall we begin our little show?",
+            text: "Hello! This is your puppet voice. The show is about to begin.",
           }),
         });
         if (res.ok) {
@@ -284,7 +284,7 @@ export function showLanding(): Promise<LandingResult> {
       if (!synth) return;
       if (synth.paused) synth.resume();
       const u = new SpeechSynthesisUtterance(
-        "Namaskaaram! I'm Delulu. Shall we begin our little show?",
+        "Hello! This is your puppet voice. The show is about to begin.",
       );
       u.rate = 1.0;
       u.pitch = 0.95;

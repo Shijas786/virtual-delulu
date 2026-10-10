@@ -8,12 +8,14 @@ export type PuppetTheme = {
   hair: number;
 };
 
-// Stock themes. `warm` is the user's hand puppet; `stage` is Delulu's
-// moonlit palette for the AI character.
+// Stock themes. `warm` is the user puppet's default; `stage` is for the
+// AI-driven StagePuppet (extending Puppet) — the lavender/mustard/teal
+// palette gives the AI character a distinct visual identity from any
+// user puppet.
 export const PUPPET_THEMES = {
   warm: { skin: 0xf2c0a8, shirt: 0xd98b4f, hair: 0x4a3a2e },
   cool: { skin: 0xc9d6c3, shirt: 0x7fb3a0, hair: 0x2a3a4a },
-  stage: { skin: 0xe7deef, shirt: 0xe8e2f2, hair: 0x2b202d },
+  stage: { skin: 0xc9b7e8, shirt: 0xe0a244, hair: 0x128a8a },
 } as const satisfies Record<string, PuppetTheme>;
 
 // Joint dimensions. Must stay in sync with src/ragdoll.ts.

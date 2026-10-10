@@ -2,9 +2,11 @@ import * as THREE from "three";
 import type { Emotion, Gesture } from "../server/protocol.ts";
 import { Puppet, PUPPET_THEMES } from "./puppet";
 
-// Delulu: an AI-driven ghost-girl on the same expressive rig as the
-// user's hand puppet. The inherited face/jaw and arm hierarchy keep all
-// speech, emotion, gaze, and gesture behavior intact.
+// Stage puppet: an AI-driven hand-puppet built on the same rig as the
+// user puppet. Inherits the sphere head + split-jaw mouth + ragdoll-able
+// arm hierarchy from Puppet, layers emotion/gesture/speaking animation
+// on top, and adds a small visual variation (visible ears) so the
+// character reads as distinct from the user puppet at a glance.
 
 type EmotionParams = {
   eyeScaleY: number;
@@ -227,9 +229,12 @@ const SHOULDER_REST_LZ = -0.15;
 const SHOULDER_REST_RZ = 0.15;
 
 /**
- * AI-driven Delulu rig. Subclasses Puppet to retain its expressive
- * face, speech jaw, and gesture anchors, then layers the ghostly sari,
- * jasmine flowers, bindi, and braid over the inherited model.
+ * AI-driven hand-puppet rig. Subclasses Puppet so it inherits the
+ * sphere-head split-jaw look; speaking drives the shared `setOpen`,
+ * gestures animate the shared shoulder groups, emotion modulates brow
+ * positions and eye scale on the inherited references. Distinct from
+ * the user puppet via theme (lavender/mustard/teal) and small ears
+ * added on top of the base rig.
  */
 export class StagePuppet extends Puppet {
   private params: EmotionParams = { ...EMOTIONS.neutral };
@@ -254,25 +259,9 @@ export class StagePuppet extends Puppet {
   constructor() {
     super(PUPPET_THEMES.stage);
 
-    // Delulu is a moonlit ghost in Kerala kasavu rather than a second
-    // ordinary hand-puppet. Keep the inherited face, jaw, and arm rig so
-    // speech, expressions, cosmetics, and gestures continue to work.
-    this.torso.visible = false;
-    this.leftShoulder.position.y = -0.88;
-    this.rightShoulder.position.y = -0.88;
-    this.leftShoulder.scale.y = 0.52;
-    this.rightShoulder.scale.y = 0.52;
-    for (const cuff of this.hairMats.slice(1)) cuff.color.set(0xc3a15d);
-    const fringe = this.upperJaw.children[2];
-    if (fringe instanceof THREE.Mesh) {
-      fringe.scale.set(0.78, 0.14, 0.24);
-      fringe.position.set(0, 0.72, 0.67);
-    }
-    this.addGhostSaree();
-    this.addJasmineAndBraid();
-
-    // Small visible ears leave the head cosmetic slot free for flowers,
-    // glasses, and other AI-directed accessories.
+    // Variation: small visible ears. Puppet has none, so ears read as
+    // a distinct silhouette element without conflicting with the head
+    // cosmetic slot (which mounts above the skull).
     const skinMat = new THREE.MeshStandardMaterial({
       color: PUPPET_THEMES.stage.skin,
       roughness: 0.85,
@@ -289,245 +278,6 @@ export class StagePuppet extends Puppet {
     rightEar.position.set(1.0, 0.1, 0);
     rightEar.scale.set(0.5, 1.1, 0.85);
     this.upperJaw.add(rightEar);
-  }
-
-  private addGhostSaree() {
-    const gown = new THREE.Group();
-    // Keep Delulu's flowing hem above the proscenium apron so the ghost
-    // silhouette stays visible at the stage's resting position.
-    gown.scale.y = 0.6;
-    gown.position.y = -0.66 * (1 - gown.scale.y) + 0.28;
-    this.root.add(gown);
-
-    const ghost = new THREE.Shape();
-    ghost.moveTo(-0.42, -0.66);
-    ghost.bezierCurveTo(-0.62, -1.05, -0.76, -1.28, -0.74, -1.8);
-    ghost.bezierCurveTo(-0.74, -2.3, -0.98, -2.72, -0.9, -3.06);
-    ghost.quadraticCurveTo(-0.48, -2.88, -0.16, -3.08);
-    ghost.quadraticCurveTo(0.15, -3.29, 0.48, -3.04);
-    ghost.quadraticCurveTo(0.76, -2.84, 1.0, -3.04);
-    ghost.bezierCurveTo(1.08, -2.68, 0.82, -2.35, 0.82, -1.8);
-    ghost.bezierCurveTo(0.82, -1.28, 0.62, -1.02, 0.42, -0.66);
-    ghost.quadraticCurveTo(0, -0.48, -0.42, -0.66);
-
-    const ghostMat = new THREE.MeshStandardMaterial({
-      color: 0xf7f1ff,
-      roughness: 0.65,
-      metalness: 0.04,
-      emissive: 0x8c69ad,
-      emissiveIntensity: 0.12,
-      transparent: true,
-      opacity: 0.93,
-      side: THREE.DoubleSide,
-    });
-    const body = new THREE.Mesh(
-      new THREE.ExtrudeGeometry(ghost, {
-        depth: 0.12,
-        bevelEnabled: true,
-        bevelSegments: 3,
-        steps: 1,
-        bevelSize: 0.035,
-        bevelThickness: 0.035,
-      }),
-      ghostMat,
-    );
-    body.position.z = -0.18;
-    body.castShadow = true;
-    gown.add(body);
-
-    // A kasavu pallu drapes diagonally across the luminous white sari.
-    const pallu = new THREE.Shape();
-    pallu.moveTo(-0.28, -0.74);
-    pallu.quadraticCurveTo(0.04, -0.95, 0.46, -1.05);
-    pallu.bezierCurveTo(0.54, -1.58, 0.7, -2.03, 0.81, -2.44);
-    pallu.lineTo(0.61, -2.56);
-    pallu.bezierCurveTo(0.43, -2.08, 0.29, -1.59, 0.2, -1.18);
-    pallu.quadraticCurveTo(-0.12, -1.1, -0.37, -0.91);
-    pallu.closePath();
-    const gold = new THREE.MeshStandardMaterial({
-      color: 0xc8a15a,
-      roughness: 0.42,
-      metalness: 0.48,
-      side: THREE.DoubleSide,
-    });
-    const drape = new THREE.Mesh(new THREE.ShapeGeometry(pallu), gold);
-    drape.position.z = -0.035;
-    gown.add(drape);
-
-    // Tiny gold border on the flowing ghost hem.
-    const hemPoints = [
-      new THREE.Vector3(-0.87, -2.96, -0.035),
-      new THREE.Vector3(-0.55, -2.91, -0.035),
-      new THREE.Vector3(-0.18, -3.0, -0.035),
-      new THREE.Vector3(0.16, -3.15, -0.035),
-      new THREE.Vector3(0.5, -2.98, -0.035),
-      new THREE.Vector3(0.77, -2.91, -0.035),
-      new THREE.Vector3(0.97, -2.96, -0.035),
-    ];
-    const hem = new THREE.Mesh(
-      new THREE.TubeGeometry(new THREE.CatmullRomCurve3(hemPoints), 28, 0.025, 6, false),
-      gold,
-    );
-    gown.add(hem);
-  }
-
-  private addJasmineAndBraid() {
-    const jasmine = new THREE.MeshStandardMaterial({ color: 0xfff8ea, roughness: 0.75 });
-    const center = new THREE.MeshStandardMaterial({ color: 0xd5aa61, roughness: 0.55, metalness: 0.25 });
-    const flower = new THREE.SphereGeometry(0.08, 12, 10);
-    for (let i = 0; i < 9; i++) {
-      const x = -0.66 + (i / 8) * 1.32;
-      const y = 0.94 - Math.abs(x) * 0.12;
-      const z = 0.38 + (1 - Math.abs(x)) * 0.1;
-      const blossom = new THREE.Mesh(flower, jasmine);
-      blossom.position.set(x, y, z);
-      blossom.scale.set(1, 0.85, 0.75);
-      this.upperJaw.add(blossom);
-      // Golden center for each jasmine bud
-      const budCore = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), center);
-      budCore.position.set(x, y + 0.01, z + 0.05);
-      this.upperJaw.add(budCore);
-    }
-
-    // Soft glowing rosy-peach cheeks, cute cheek highlights, big sparkling
-    // anime eyes with double glints, and a sweet kitten smile make Delulu
-    // charming, vibrant, and lovable.
-    const blush = new THREE.MeshStandardMaterial({
-      color: 0xff7b95,
-      roughness: 0.7,
-      transparent: true,
-      opacity: 0.65,
-      emissive: 0xff8ca3,
-      emissiveIntensity: 0.15,
-    });
-    const cheekGlintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-
-    for (const side of [-1, 1]) {
-      // Rosy cheek
-      const cheek = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), blush);
-      cheek.position.set(side * 0.55, 0.18, 0.79);
-      cheek.scale.set(1.4, 0.8, 0.3);
-      this.upperJaw.add(cheek);
-
-      // Cute cheek highlight sparkle
-      const cheekSparkle = new THREE.Mesh(new THREE.SphereGeometry(0.022, 10, 8), cheekGlintMat);
-      cheekSparkle.position.set(side * 0.57, 0.21, 0.83);
-      this.upperJaw.add(cheekSparkle);
-
-      // Eye white: slightly larger and rounder
-      const eye = side < 0 ? this.leftEye : this.rightEye;
-      eye.children[0]!.scale.set(1.22, 1.25, 1.05);
-
-      // Pupil: tint to deep glistening midnight violet
-      const pupilMesh = eye.children[1];
-      if (pupilMesh instanceof THREE.Mesh) {
-        pupilMesh.scale.set(1.2, 1.2, 1.0);
-        if (pupilMesh.material instanceof THREE.MeshStandardMaterial) {
-          pupilMesh.material.color.set(0x22132a);
-          pupilMesh.material.roughness = 0.25;
-        }
-      }
-
-      // Main big bright sparkle glint (top-left)
-      const glint1 = new THREE.Mesh(
-        new THREE.SphereGeometry(0.048, 12, 10),
-        new THREE.MeshBasicMaterial({ color: 0xffffff }),
-      );
-      glint1.position.set(-0.065, 0.08, 0.24);
-      eye.add(glint1);
-
-      // Secondary cute little bounce twinkle glint (bottom-right)
-      const glint2 = new THREE.Mesh(
-        new THREE.SphereGeometry(0.025, 10, 8),
-        new THREE.MeshBasicMaterial({ color: 0xf5eeff }),
-      );
-      glint2.position.set(0.045, -0.05, 0.242);
-      eye.add(glint2);
-
-      // Cute anime curved upper lash
-      const lashCurve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-side * 0.14, 0.2, 0.19),
-        new THREE.Vector3(0, 0.26, 0.22),
-        new THREE.Vector3(side * 0.16, 0.22, 0.2),
-        new THREE.Vector3(side * 0.24, 0.25, 0.16),
-      ]);
-      const lash = new THREE.Mesh(
-        new THREE.TubeGeometry(lashCurve, 14, 0.016, 6, false),
-        new THREE.MeshStandardMaterial({ color: 0x22132a, roughness: 0.5 }),
-      );
-      eye.add(lash);
-    }
-
-    // Sweet kitten / chibi smile with slight center cupid's bow and upturned corners
-    const smileCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.17, 0.13, 0.975),
-      new THREE.Vector3(-0.08, 0.055, 0.993),
-      new THREE.Vector3(0, 0.08, 0.996),
-      new THREE.Vector3(0.08, 0.055, 0.993),
-      new THREE.Vector3(0.17, 0.13, 0.975),
-    ]);
-    const smile = new THREE.Mesh(
-      new THREE.TubeGeometry(smileCurve, 18, 0.02, 8, false),
-      new THREE.MeshStandardMaterial({ color: 0x9e3f56, roughness: 0.55 }),
-    );
-    this.upperJaw.add(smile);
-
-    // The tiny red bindi and warm gold earrings
-    const bindi = new THREE.Mesh(
-      new THREE.SphereGeometry(0.058, 12, 10),
-      new THREE.MeshStandardMaterial({
-        color: 0xc23447,
-        roughness: 0.4,
-        emissive: 0x992233,
-        emissiveIntensity: 0.2,
-      }),
-    );
-    bindi.position.set(0, 0.78, 0.84);
-    this.upperJaw.add(bindi);
-
-    // Tiny gold maang tikka droplet above the bindi
-    const tikkaDrop = new THREE.Mesh(
-      new THREE.ConeGeometry(0.035, 0.08, 8),
-      center,
-    );
-    tikkaDrop.position.set(0, 0.88, 0.8);
-    tikkaDrop.rotation.z = Math.PI;
-    this.upperJaw.add(tikkaDrop);
-
-    const earring = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.028, 8, 16), center);
-    for (const side of [-1, 1]) {
-      const ring = earring.clone();
-      ring.position.set(side * 0.98, -0.04, 0.12);
-      this.upperJaw.add(ring);
-    }
-
-    const hairMat = new THREE.MeshStandardMaterial({ color: PUPPET_THEMES.stage.hair, roughness: 0.82 });
-    this.hairMats.push(hairMat);
-
-    // Cute face-framing curl tendrils
-    for (const side of [-1, 1]) {
-      const curlCurve = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(side * 0.72, 0.45, 0.55),
-        new THREE.Vector3(side * 0.82, 0.15, 0.62),
-        new THREE.Vector3(side * 0.78, -0.15, 0.58),
-        new THREE.Vector3(side * 0.72, -0.32, 0.5),
-      ]);
-      const curl = new THREE.Mesh(new THREE.TubeGeometry(curlCurve, 16, 0.045, 8, false), hairMat);
-      this.upperJaw.add(curl);
-    }
-
-    const braidCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0.72, 0.28, -0.05),
-      new THREE.Vector3(0.96, -0.08, -0.08),
-      new THREE.Vector3(0.88, -0.48, -0.1),
-      new THREE.Vector3(1.02, -0.82, -0.08),
-    ]);
-    const braid = new THREE.Mesh(new THREE.TubeGeometry(braidCurve, 20, 0.12, 10, false), hairMat);
-    this.upperJaw.add(braid);
-
-    const braidFlower = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 8), jasmine);
-    braidFlower.position.set(0.91, -0.35, 0.03);
-    this.upperJaw.add(braidFlower);
   }
 
   override setGaze(gx: number, gy: number) {

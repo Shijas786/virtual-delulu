@@ -4,6 +4,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
+## 2026-10-11T01:29:00+05:30 — Align canonical puppet theater architecture and visuals with rhmoller reference
+
+- Changed: `src/puppet.ts`, `src/puppet-stage.ts`, `src/landing.ts`, `src/hud.ts`, `index.html`
+- Why: Aligned puppet visual architecture, split-jaw rig, and landing preflight flow with `rhmoller/virtual-puppet-theater`, while retaining OpenAI integration (`gpt-4o`/`gpt-4o-mini`, OpenAI speech synthesis, OpenAI asset generation) and stage prompt interaction.
+- Validation: Verified `bun test` passes 53 tests; verified `/tts` audio generation; verified build with Vite.
+- Limitations: None.
+
 ## 2026-10-11T00:54:00+05:30 — Interactive stage chat & prompt chips, audio playback unlock & origin support
 
 - Changed: `src/stage-chat.ts`, `src/main.ts`, `src/brain.ts`, `src/landing.ts`, `src/speech.ts`, `server/limits.ts`, `server/index.ts`, `index.html`

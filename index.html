@@ -3,9 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#17121e" />
-    <meta name="description" content="Meet Delulu, your little moonlit ghost from Kerala." />
-    <title>Delulu's Moonlight Koothu</title>
+    <title>Puppet Theater</title>
     <style>
       html,
       body {
@@ -203,6 +201,7 @@
         color: #0a0a0c;
         border: 0;
         font-weight: 600;
+        cursor: pointer;
       }
       #landing-start:hover:not(:disabled) {
         filter: brightness(1.08);
@@ -260,8 +259,6 @@
         gap: 6px;
         pointer-events: none;
         font-family: ui-sans-serif, system-ui, sans-serif;
-        transform: scale(2);
-        transform-origin: bottom right;
       }
       .hud-bar {
         display: flex;
@@ -358,22 +355,18 @@
         border-color: #6a3a32;
         color: #d8a89a;
       }
-      .hud-stt-status {
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        font-size: 10px;
-        white-space: nowrap;
-      }
       .hud-stt-text {
         color: #e8e3d8;
         font-style: italic;
-        max-width: 260px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        max-width: 240px;
       }
-      .hud-stt-text[data-final="true"] { font-style: normal; color: #f5ead4; }
-      .hud-stt-text[hidden] { display: none; }
+      .hud-stt-text[data-final="true"] {
+        color: #f1d8b8;
+        font-style: normal;
+      }
       .hud-dreaming {
         display: inline-flex;
         align-items: center;
@@ -399,6 +392,11 @@
         0%, 100% { box-shadow: 0 0 12px rgba(150, 100, 220, 0.2); }
         50% { box-shadow: 0 0 24px rgba(180, 130, 240, 0.45); }
       }
+      @keyframes hud-dreaming-spin {
+        0%, 100% { transform: rotate(-6deg) scale(1); }
+        50% { transform: rotate(6deg) scale(1.15); }
+      }
+
       /* ---------- Stage Chat & Prompt Chips ---------- */
       #stage-chat {
         position: fixed;
@@ -462,7 +460,7 @@
         color: rgba(220, 205, 225, 0.5);
       }
       .stage-chat-submit {
-        background: linear-gradient(135deg, #d2ad67, #e8c7de);
+        background: linear-gradient(135deg, #d98b4f, #7fb3a0);
         border: none;
         outline: none;
         color: #1a1220;
@@ -477,400 +475,71 @@
         filter: brightness(1.1);
         transform: scale(1.03);
       }
-
-      /* ---------- Delulu: moonlit Kerala ghost-girl ---------- */
-      :root {
-        color-scheme: dark;
-        --night: #17121e;
-        --plum: #2b1d32;
-        --petal: #f1c7d3;
-        --cream: #fff7e8;
-        --kasavu: #d2ad67;
-        --leaf: #9fbd9c;
-        --muted: #b7aab9;
-      }
-      html, body {
-        background: var(--night);
-        color: var(--cream);
-        font-family: "Aptos", "Trebuchet MS", ui-sans-serif, system-ui, sans-serif;
-      }
-      #landing {
-        padding: 20px;
-        box-sizing: border-box;
-        overflow-y: auto;
-        background:
-          radial-gradient(ellipse at 17% 13%, rgba(102, 72, 119, 0.38), transparent 34%),
-          radial-gradient(ellipse at 83% 84%, rgba(107, 67, 87, 0.3), transparent 36%),
-          linear-gradient(140deg, #15121c, #211624 52%, #15151b);
-      }
-      #landing::before, #landing::after {
-        content: "✦";
-        position: fixed;
-        color: rgba(240, 216, 164, 0.4);
-        font-size: 22px;
-        pointer-events: none;
-      }
-      #landing::before { top: 8%; left: 8%; }
-      #landing::after { right: 9%; bottom: 9%; font-size: 30px; }
-      .landing-card {
-        width: min(960px, calc(100vw - 40px));
-        max-height: min(760px, calc(100vh - 40px));
-        min-height: 540px;
-        display: grid;
-        grid-template-columns: minmax(280px, 0.82fr) minmax(400px, 1.18fr);
-        gap: 12px;
-        padding: 12px;
-        overflow: hidden auto;
-        background: rgba(31, 24, 35, 0.94);
-        border: 1px solid rgba(229, 203, 153, 0.28);
-        border-radius: 24px;
-        box-shadow: 0 32px 100px rgba(0, 0, 0, 0.54), 0 0 54px rgba(202, 154, 183, 0.1);
-        backdrop-filter: blur(18px);
-      }
-      .landing-hero {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 510px;
-        padding: 30px 28px 26px;
-        overflow: hidden;
-        text-align: center;
-        border: 1px solid rgba(255, 245, 223, 0.1);
-        border-radius: 17px;
-        background:
-          radial-gradient(ellipse at 50% 36%, rgba(210, 173, 103, 0.16), transparent 42%),
-          linear-gradient(160deg, #39263d 0%, #271d32 55%, #1c2026 100%);
-      }
-      .landing-hero::before, .landing-hero::after {
-        content: "";
-        position: absolute;
-        width: 180px;
-        height: 180px;
-        border: 1px solid rgba(210, 173, 103, 0.16);
-        border-radius: 50%;
-        pointer-events: none;
-      }
-      .landing-hero::before { top: -120px; left: -90px; }
-      .landing-hero::after { right: -130px; bottom: -105px; width: 240px; height: 240px; }
-      .landing-kicker, .landing-eyebrow {
-        color: #dfc48f;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-      }
-      .delulu-art {
-        width: min(230px, 64%);
-        height: auto;
-        margin: 16px 0 5px;
-        overflow: visible;
-        filter: drop-shadow(0 18px 24px rgba(8, 7, 11, 0.35));
-        animation: delulu-float 4.2s ease-in-out infinite;
-      }
-      @keyframes delulu-float {
-        0%, 100% { transform: translateY(0) rotate(-1deg); }
-        50% { transform: translateY(-8px) rotate(1deg); }
-      }
-      .landing-title {
-        margin: 4px 0 0;
-        color: var(--cream);
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(42px, 5vw, 56px);
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        line-height: 1;
-      }
-      .landing-sub {
-        margin: 8px 0 0;
-        color: #e5cbd1;
-        font-size: 14px;
-        letter-spacing: 0.1px;
-        line-height: 1.55;
-        text-transform: none;
-      }
-      .hero-tags {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 7px;
-        margin-top: 18px;
-      }
-      .hero-tags span {
-        padding: 6px 9px;
-        border: 1px solid rgba(255, 247, 232, 0.16);
-        border-radius: 999px;
-        background: rgba(19, 16, 24, 0.25);
-        color: #e9dfd2;
-        font-size: 10px;
-      }
-      .landing-controls {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        min-width: 0;
-        padding: 24px clamp(16px, 3vw, 34px);
-      }
-      .controls-heading { margin-bottom: 15px; }
-      .controls-heading h2 {
-        margin: 5px 0 4px;
-        color: var(--cream);
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: 25px;
-        font-weight: 500;
-      }
-      .controls-heading p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 12px;
-        line-height: 1.5;
-      }
-      .setup-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 9px;
-      }
-      .landing-section {
-        min-width: 0;
-        margin: 0;
-        padding: 13px;
-        border: 1px solid rgba(255, 247, 232, 0.1);
-        border-radius: 13px;
-        background: rgba(255, 247, 232, 0.035);
-      }
-      .landing-section h3 {
-        margin: 0 0 9px;
-        color: #e2c991;
-        font-size: 10px;
-        letter-spacing: 1.3px;
-      }
-      #landing-camera-preview {
-        width: 100%;
-        max-width: none;
-        aspect-ratio: 16 / 9;
-        border-color: rgba(255, 247, 232, 0.14);
-        border-radius: 9px;
-        background: #15121a;
-      }
-      #landing-stt-text {
-        height: 52px;
-        padding: 9px;
-        color: var(--cream);
-        border-color: rgba(255, 247, 232, 0.14);
-        border-radius: 9px;
-        background: rgba(16, 14, 20, 0.58);
-        font-size: 11px;
-      }
-      .status { font-size: 10px; }
-      .status.pending { color: #b7aab9; }
-      .status.ok { color: #a8c7a2; }
-      .status.warn { color: #e0bc73; }
-      .status.err { color: #e29aa0; }
-      button.landing-btn, select.landing-select, .brain-pill {
-        border-color: rgba(255, 247, 232, 0.16);
-        border-radius: 9px;
-        background: #302636;
-        color: var(--cream);
-      }
-      button.landing-btn:hover:not(:disabled), select.landing-select:hover, .brain-pill:hover {
-        border-color: rgba(210, 173, 103, 0.65);
-        background: #3a2c40;
-      }
-      .landing-row { gap: 7px; }
-      .landing-row button { flex: 1; }
-      .landing-select { min-width: 0; max-width: 100%; }
-      .brain-row { gap: 7px; }
-      .brain-pill { padding: 9px; }
-      .brain-pill.active {
-        border-color: var(--kasavu);
-        background: rgba(167, 129, 71, 0.18);
-        box-shadow: inset 0 0 0 1px rgba(210, 173, 103, 0.12);
-      }
-      .brain-pill-title { color: #f6e4bd; font-size: 11px; }
-      .brain-pill-sub { color: #b7aab9; font-size: 9px; }
-      .brain-pill.active .brain-pill-sub { color: #d7c49e; }
-      #landing-start {
-        margin-top: 14px;
-        padding: 13px 18px;
-        border: 1px solid rgba(255, 247, 232, 0.16);
-        border-radius: 11px;
-        background: linear-gradient(105deg, #d4b16e 0%, #e4c887 46%, #d7a3b6 100%);
-        color: #291e2d;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 1.6px;
-        box-shadow: 0 9px 22px rgba(203, 163, 104, 0.17);
-      }
-      #landing-start:disabled { opacity: 0.45; }
-      .landing-footnote {
-        margin: 9px 0 0;
-        color: #9f94a3;
-        font-size: 10px;
-        text-align: center;
-      }
-      #video, #landmark-canvas {
-        border: 1px solid rgba(210, 173, 103, 0.5);
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-      }
-      #hud {
-        transform: none;
-        gap: 7px;
-        font-family: "Aptos", "Trebuchet MS", ui-sans-serif, system-ui, sans-serif;
-      }
-      .hud-bar, .hud-stt {
-        border-color: rgba(229, 203, 153, 0.22);
-        border-radius: 999px;
-        background: rgba(29, 22, 34, 0.84);
-        color: #e1d4c1;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-      }
-      .hud-bar { padding: 8px 13px; font-size: 9px; }
-      .hud-stt { padding: 8px 12px; font-size: 10px; }
-      .hud-stt[data-state="listening"] { border-color: #668f70; }
-      .hud-stt[data-state="hearing"] { border-color: #a9c58e; box-shadow: 0 0 12px rgba(169, 197, 142, 0.2); }
-      .hud-dot[data-status="ok"] { background: #a8c7a2; box-shadow: 0 0 7px rgba(168, 199, 162, 0.55); }
-      .hud-dot[data-status="warn"] { background: #e0bc73; box-shadow: 0 0 7px rgba(224, 188, 115, 0.45); }
-      .hud-banner { border-color: #806440; border-radius: 10px; background: rgba(56, 39, 48, 0.92); color: #f6e4bd; }
-      .hud-toast { border-color: rgba(229, 203, 153, 0.24); border-radius: 10px; background: rgba(39, 29, 44, 0.95); }
-      .hud-dreaming { border-color: #856d9a; border-radius: 999px; background: linear-gradient(135deg, rgba(75, 48, 87, 0.94), rgba(47, 35, 57, 0.94)); }
-      @media (max-width: 740px) {
-        #landing { align-items: flex-start; padding: 12px; }
-        .landing-card {
-          width: min(520px, calc(100vw - 24px));
-          max-height: none;
-          min-height: 0;
-          grid-template-columns: 1fr;
-          gap: 8px;
-        }
-        .landing-hero { min-height: 0; padding: 22px 18px 20px; }
-        .delulu-art { width: 118px; margin: 8px 0 0; }
-        .landing-title { font-size: 42px; }
-        .landing-sub { font-size: 12px; }
-        .hero-tags { margin-top: 12px; }
-        .landing-controls { padding: 15px 8px 9px; }
-        .controls-heading { margin-bottom: 11px; }
-        .controls-heading h2 { font-size: 21px; }
-      }
-      @media (max-width: 420px) {
-        .setup-grid { grid-template-columns: 1fr; }
-        .landing-section { padding: 11px; }
-        #landing-stt-text { height: 42px; }
-        .brain-pill-sub { font-size: 8px; }
-        #hud { right: 8px; bottom: 8px; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
-      }
     </style>
   </head>
   <body>
     <div id="landing">
       <div class="landing-card">
-        <section class="landing-hero" aria-label="Meet Delulu">
-          <div class="landing-kicker">A little Kerala moon magic</div>
-          <svg class="delulu-art" viewBox="0 0 240 250" role="img" aria-label="Delulu, a smiling ghost girl in a kasavu sari with jasmine in her hair">
-            <defs>
-              <linearGradient id="ghost-dress" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stop-color="#fffdf5" />
-                <stop offset="1" stop-color="#ded8ef" />
-              </linearGradient>
-              <linearGradient id="hair" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stop-color="#342331" />
-                <stop offset="1" stop-color="#17141d" />
-              </linearGradient>
-              <filter id="soft-glow" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur stdDeviation="7" />
-              </filter>
-            </defs>
-            <ellipse cx="120" cy="222" rx="55" ry="12" fill="#e8c7de" opacity=".23" filter="url(#soft-glow)" />
-            <path d="M60 132 C45 165 54 204 41 218 C61 227 69 210 83 219 C99 230 108 210 123 219 C140 230 150 209 166 218 C183 228 193 212 202 218 C190 191 197 158 178 132Z" fill="url(#ghost-dress)" stroke="#fff8ec" stroke-width="3" />
-            <path d="M68 157 C91 171 119 176 157 158 C170 178 178 199 183 212 C150 206 138 226 119 215 C100 204 82 224 59 215 C68 197 69 175 68 157Z" fill="#f7eff3" opacity=".76" />
-            <path d="M76 144 C91 159 122 168 157 159 C150 180 144 202 141 216" fill="none" stroke="#c5a05a" stroke-width="5" stroke-linecap="round" />
-            <path d="M46 216 C61 221 70 209 84 217 C98 225 108 210 123 217 C139 225 150 208 166 216 C182 223 193 211 200 216" fill="none" stroke="#d1ad69" stroke-width="3" stroke-linecap="round" />
-            <path d="M72 92 C64 51 88 27 120 27 C155 27 178 54 169 97 C165 119 149 139 120 141 C91 139 75 119 72 92Z" fill="#e9bdad" stroke="#f6d8cb" stroke-width="2" />
-            <path d="M69 91 C55 53 79 18 119 18 C158 18 183 44 173 89 C164 71 154 64 144 57 C123 76 97 73 78 94Z" fill="url(#hair)" />
-            <path d="M72 69 C55 97 66 130 83 148 C70 157 55 144 52 122 C47 100 54 79 72 69Z" fill="url(#hair)" />
-            <path d="M167 66 C185 91 181 132 158 153 C176 157 189 142 192 118 C194 95 184 75 167 66Z" fill="url(#hair)" />
-            <path d="M93 92 C99 86 107 86 112 92" fill="none" stroke="#382730" stroke-width="4" stroke-linecap="round" />
-            <path d="M128 92 C134 86 142 86 148 92" fill="none" stroke="#382730" stroke-width="4" stroke-linecap="round" />
-            <ellipse cx="102" cy="101" rx="5" ry="7" fill="#32242e" />
-            <ellipse cx="139" cy="101" rx="5" ry="7" fill="#32242e" />
-            <circle cx="85" cy="111" r="8" fill="#e89e9d" opacity=".44" />
-            <circle cx="155" cy="111" r="8" fill="#e89e9d" opacity=".44" />
-            <path d="M111 115 Q120 124 130 115" fill="none" stroke="#9d5263" stroke-width="3" stroke-linecap="round" />
-            <circle cx="120" cy="80" r="3.5" fill="#b84956" />
-            <path d="M83 43 C101 30 138 29 157 48" fill="none" stroke="#d6b976" stroke-width="3" />
-            <g fill="#fffaf0" stroke="#dfc98e" stroke-width="1.5">
-              <circle cx="84" cy="47" r="6" /><circle cx="96" cy="39" r="6" /><circle cx="109" cy="35" r="6" />
-              <circle cx="123" cy="35" r="6" /><circle cx="137" cy="38" r="6" /><circle cx="150" cy="46" r="6" />
-            </g>
-            <path d="M177 45 C200 30 203 65 189 85 C178 101 188 116 176 133" fill="none" stroke="#201821" stroke-width="9" stroke-linecap="round" />
-            <path d="M187 89 C201 93 200 106 189 108 C179 110 179 97 187 89Z" fill="#fffaf0" stroke="#dfc98e" stroke-width="2" />
-            <path d="M55 103 C35 94 31 111 44 119" fill="none" stroke="#eee8f4" stroke-width="8" stroke-linecap="round" />
-            <path d="M181 103 C201 94 206 111 193 119" fill="none" stroke="#eee8f4" stroke-width="8" stroke-linecap="round" />
-            <path d="M39 59 l4 9 9 4 -9 4 -4 9 -4-9 -9-4 9-4Z" fill="#e7cb88" />
-            <path d="M202 148 l3 7 7 3 -7 3 -3 7 -3-7 -7-3 7-3Z" fill="#e7cb88" opacity=".8" />
-          </svg>
-          <h1 class="landing-title">Delulu</h1>
-          <p class="landing-sub">Your sweet little ghost girl from Kerala.<br />Big feelings, moonlight mischief, and a bit of Malayalam.</p>
-          <div class="hero-tags" aria-label="Delulu's theme">
-            <span>🌙 Moonlit magic</span><span>🌼 Jasmine &amp; kasavu</span><span>✨ Full-on delulu</span>
+        <h1 class="landing-title">Virtual Puppet Theater</h1>
+        <p class="landing-sub">Pre-flight check</p>
+
+        <section class="landing-section">
+          <h3>Camera</h3>
+          <video id="landing-camera-preview" playsinline muted></video>
+          <div id="landing-camera-status" class="status pending">Requesting camera…</div>
+        </section>
+
+        <section class="landing-section">
+          <h3>Microphone</h3>
+          <div id="landing-stt-status" class="status pending">Checking speech recognition…</div>
+          <textarea
+            id="landing-stt-text"
+            readonly
+            placeholder="Speak — what we hear appears here."
+          ></textarea>
+          <div id="landing-stt-trace" class="status pending" style="font-size: 10px; font-family: ui-monospace, monospace; min-height: 1em"></div>
+          <div class="landing-row" style="margin-top: 8px">
+            <button id="landing-stt-btn" class="landing-btn" type="button">Test microphone</button>
           </div>
         </section>
 
-        <div class="landing-controls">
-          <div class="controls-heading">
-            <div class="landing-eyebrow">Before the koothu begins</div>
-            <h2>Let’s get the show ready</h2>
-            <p>Check your camera and voice, then meet Delulu on her little stage.</p>
+        <section class="landing-section">
+          <h3>Voice</h3>
+          <div class="landing-row">
+            <button id="landing-tts-btn" class="landing-btn" type="button">Say hello</button>
+            <select id="landing-voice-select" class="landing-select" aria-label="AI puppet voice">
+              <option value="">Auto (AI picks)</option>
+            </select>
           </div>
-          <div class="setup-grid">
-            <section class="landing-section">
-              <h3>📷 Camera</h3>
-              <video id="landing-camera-preview" playsinline muted></video>
-              <div id="landing-camera-status" class="status pending">Requesting camera…</div>
-            </section>
+        </section>
 
-            <section class="landing-section">
-              <h3>🎙️ Your voice</h3>
-              <div id="landing-stt-status" class="status pending">Checking speech recognition…</div>
-              <textarea id="landing-stt-text" readonly placeholder="Say something — it’ll show up here."></textarea>
-              <div id="landing-stt-trace" class="status pending" style="font-size: 10px; font-family: ui-monospace, monospace; min-height: 1em"></div>
-              <div class="landing-row" style="margin-top: 8px">
-                <button id="landing-stt-btn" class="landing-btn" type="button">Test microphone</button>
-              </div>
-            </section>
-
-            <section class="landing-section">
-              <h3>🔔 Delulu’s voice</h3>
-              <div class="landing-row">
-                <button id="landing-tts-btn" class="landing-btn" type="button">Say hello</button>
-                <select id="landing-voice-select" class="landing-select" aria-label="Delulu's voice">
-                  <option value="">Auto (Delulu picks)</option>
-                </select>
-              </div>
-            </section>
-
-            <section class="landing-section">
-              <h3>🧠 Delulu’s brain</h3>
-              <div class="brain-row" role="radiogroup" aria-label="Brain size">
-                <button id="landing-brain-large" class="brain-pill active" type="button" role="radio" aria-checked="true">
-                  <span class="brain-pill-title">Big brain</span>
-                  <span class="brain-pill-sub">More thoughtful · a bit slower</span>
-                </button>
-                <button id="landing-brain-small" class="brain-pill" type="button" role="radio" aria-checked="false">
-                  <span class="brain-pill-title">Quick brain</span>
-                  <span class="brain-pill-sub">Faster replies · Haiku</span>
-                </button>
-              </div>
-            </section>
+        <section class="landing-section">
+          <h3>Puppet brain</h3>
+          <div class="brain-row" role="radiogroup" aria-label="Brain size">
+            <button
+              id="landing-brain-large"
+              class="brain-pill active"
+              type="button"
+              role="radio"
+              aria-checked="true"
+            >
+              <span class="brain-pill-title">Large brain</span>
+              <span class="brain-pill-sub">Smarter but slower (GPT-4o)</span>
+            </button>
+            <button
+              id="landing-brain-small"
+              class="brain-pill"
+              type="button"
+              role="radio"
+              aria-checked="false"
+            >
+              <span class="brain-pill-title">Small brain</span>
+              <span class="brain-pill-sub">Faster (GPT-4o-mini)</span>
+            </button>
           </div>
+        </section>
 
-          <button id="landing-start" type="button" disabled>Meet Delulu</button>
-          <p class="landing-footnote">Camera permission is only used for hand puppetry. No video is saved.</p>
-        </div>
+        <button id="landing-start" type="button" disabled>Start the show</button>
       </div>
     </div>
 
