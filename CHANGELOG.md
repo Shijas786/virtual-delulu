@@ -4,7 +4,15 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
-## 2026-10-11T00:29:00+05:30 — Fix OpenAI JSON schema prompt constraint for real-time speech
+## 2026-10-11T00:54:00+05:30 — Interactive stage chat & prompt chips, audio playback unlock & origin support
+
+- Changed: `src/stage-chat.ts`, `src/main.ts`, `src/brain.ts`, `src/landing.ts`, `src/speech.ts`, `server/limits.ts`, `server/index.ts`, `index.html`
+- Why:
+  1. Guaranteed instant prop generation and speech interaction by adding on-stage quick-prompt chips (e.g. 🧢 "Wear a cap", 👑 "Golden crown", 🕶️ "Sunglasses", 🌸 "Jasmine flowers", 🏖️ "Moonlit beach") and an in-stage chat input that sends speech transcripts directly to Delulu.
+  2. Fixed audio playback by ensuring Web Audio context and browser speech synthesis are unlocked on landing and stage interactions, and routed the landing "Say hello" button to test OpenAI Nova TTS directly with fallback.
+  3. Expanded `originAllowed` in `server/limits.ts` to support `.vercel.app` domains and any local ports.
+- Validation: Verified `/tts` returns `audio/mpeg` (200 OK) for both localhost and Vercel origins; `bun test` passes all 53 tests; Vite build succeeded.
+- Limitations: None.
 
 - Changed: `server/llm.ts`
 - Why: OpenAI API requires the word 'json' in messages when `response_format: { type: "json_object" }` is enabled; added explicit JSON schema instructions to system prompt so live speech recognition turns trigger AI responses without 400 errors.

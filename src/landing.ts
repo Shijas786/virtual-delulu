@@ -7,7 +7,7 @@
 // failures into a console.warn and left the user staring at an empty
 // stage. This makes the failure modes addressable.
 
-import { onVoicesReady } from "./speech";
+import { onVoicesReady, installSpeechUnlock } from "./speech";
 import type { BrainSize } from "../server/protocol.ts";
 
 export type LandingResult = {
@@ -256,9 +256,33 @@ export function showLanding(): Promise<LandingResult> {
       ttsBtn.disabled = true;
       ttsBtn.textContent = "TTS unavailable";
     }
-    ttsBtn.addEventListener("click", () => {
+    ttsBtn.addEventListener("click", async () => {
+      installSpeechUnlock();
+      // Try OpenAI server TTS first
+      try {
+        const res = await fetch("/tts", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            text: "Namaskaaram! I'm Delulu. Shall we begin our little show?",
+          }),
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          audio.onended = () => URL.revokeObjectURL(url);
+          audio.onerror = () => URL.revokeObjectURL(url);
+          await audio.play();
+          return;
+        }
+      } catch (err) {
+        console.warn("[landing] server tts failed, using browser synthesis:", err);
+      }
+
       const synth = window.speechSynthesis;
       if (!synth) return;
+      if (synth.paused) synth.resume();
       const u = new SpeechSynthesisUtterance(
         "Namaskaaram! I'm Delulu. Shall we begin our little show?",
       );
@@ -282,6 +306,7 @@ export function showLanding(): Promise<LandingResult> {
     startBtn.addEventListener(
       "click",
       () => {
+        installSpeechUnlock();
         root.classList.add("hidden");
 
         let resolved = false;

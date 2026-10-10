@@ -399,9 +399,83 @@
         0%, 100% { box-shadow: 0 0 12px rgba(150, 100, 220, 0.2); }
         50% { box-shadow: 0 0 24px rgba(180, 130, 240, 0.45); }
       }
-      @keyframes hud-dreaming-spin {
-        0%, 100% { transform: rotate(-6deg) scale(1); }
-        50% { transform: rotate(6deg) scale(1.15); }
+      /* ---------- Stage Chat & Prompt Chips ---------- */
+      #stage-chat {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        width: min(640px, calc(100vw - 32px));
+        pointer-events: auto;
+      }
+      .stage-chat-chips {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+      }
+      .stage-chip {
+        background: rgba(27, 22, 34, 0.78);
+        border: 1px solid rgba(210, 173, 103, 0.3);
+        color: #f1e3d3;
+        border-radius: 16px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-family: inherit;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        transition: all 0.2s ease;
+      }
+      .stage-chip:hover {
+        background: rgba(45, 33, 56, 0.9);
+        border-color: #d2ad67;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(210, 173, 103, 0.2);
+      }
+      .stage-chat-bar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        background: rgba(18, 14, 24, 0.88);
+        border: 1px solid rgba(210, 173, 103, 0.35);
+        border-radius: 24px;
+        padding: 4px 6px 4px 16px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+      .stage-chat-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #fff7e8;
+        font-size: 13px;
+        font-family: inherit;
+      }
+      .stage-chat-input::placeholder {
+        color: rgba(220, 205, 225, 0.5);
+      }
+      .stage-chat-submit {
+        background: linear-gradient(135deg, #d2ad67, #e8c7de);
+        border: none;
+        outline: none;
+        color: #1a1220;
+        font-weight: 600;
+        font-size: 12px;
+        border-radius: 18px;
+        padding: 7px 14px;
+        cursor: pointer;
+        transition: filter 0.15s, transform 0.15s;
+      }
+      .stage-chat-submit:hover {
+        filter: brightness(1.1);
+        transform: scale(1.03);
       }
 
       /* ---------- Delulu: moonlit Kerala ghost-girl ---------- */

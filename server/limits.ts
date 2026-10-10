@@ -4,6 +4,7 @@
 
 export const ALLOWED_ORIGINS = new Set([
   "https://virtual-delulu.fly.dev",
+  "https://virtual-delulu.vercel.app",
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
@@ -133,5 +134,8 @@ export function clientIpFrom(headers: Headers): string {
 export function originAllowed(headers: Headers): boolean {
   const origin = headers.get("origin");
   if (!origin) return false;
-  return ALLOWED_ORIGINS.has(origin);
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  if (/^https:\/\/virtual-delulu.*\.vercel\.app$/.test(origin)) return true;
+  if (/^http:\/\/localhost(:\d+)?$/.test(origin)) return true;
+  return false;
 }

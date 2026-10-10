@@ -190,10 +190,9 @@ async function speakNowEleven(text: string) {
     };
     await audio.play();
   } catch (err) {
-    console.warn("[tts] eleven failed, falling back to browser TTS:", err);
+    console.warn("[tts] server tts failed, falling back to browser TTS:", err);
     if (url) URL.revokeObjectURL(url);
     currentAudio = null;
-    elevenAvailable = false;
     speakNowBrowser(text);
   }
 }
@@ -204,11 +203,14 @@ function speakNowBrowser(text: string, retry = true) {
     console.warn("[tts] skip", { hasSynth: !!synth, text });
     return;
   }
+  if (synth.paused) {
+    synth.resume();
+  }
   playing = true;
   const preState = { speaking: synth.speaking, pending: synth.pending, paused: synth.paused };
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = 1.0;
-  utter.pitch = 0.9;
+  utter.pitch = 0.95;
   const voice = pickStageVoice();
   if (voice) utter.voice = voice;
   const voiceInfo = voice
@@ -284,8 +286,25 @@ export function cancelSpeech() {
   window.speechSynthesis?.cancel();
 }
 
+let audioContext: AudioContext | null = null;
+
 export function installSpeechUnlock() {
   const unlock = () => {
+    if (!audioContext && typeof window !== "undefined") {
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (AudioCtx) {
+        audioContext = new AudioCtx();
+      }
+    }
+    if (audioContext && audioContext.state === "suspended") {
+      void audioContext.resume();
+    }
+    if (window.speechSynthesis?.paused) {
+      window.speechSynthesis.resume();
+    }
+
     if (speechUnlocked) return;
     speechUnlocked = true;
     setTimeout(() => {
@@ -293,6 +312,7 @@ export function installSpeechUnlock() {
     }, 50);
   };
   window.addEventListener("pointerdown", unlock, { capture: true });
+  window.addEventListener("click", unlock, { capture: true });
   window.addEventListener("keydown", unlock, { capture: true });
   window.addEventListener("touchstart", unlock, { capture: true });
 

@@ -11,3 +11,5 @@ Use Codex during the hackathon and briefly document its actual contribution here
 | 2026-10-10T23:00:00+05:30 | Antigravity (Google DeepMind) | Project cleanup: author rewrite, hackathon ref removal, template compliance | All docs, config, and git history | Reviewed by Shijas T | `bun test` 51 pass; build succeeds |
 | 2026-10-10T23:46:00+05:30 | Antigravity (Google DeepMind) | Vercel production hosting and deployment linking | `SUBMISSION.md`, `README.md`, `CHANGELOG.md`, `.gitignore` | Reviewed by Shijas T | Deployed to https://virtual-delulu.vercel.app; HTTP 200 verified |
 | 2026-10-11T00:08:00+05:30 | Antigravity (Google DeepMind) | Visual cuteness overhaul & OpenAI migration | `src/puppet-stage.ts`, `server/llm.ts`, `server/tts.ts`, `server/asset-generator.ts`, `server/index.ts` | Reviewed by Shijas T | `bun test` 53 tests pass; build succeeded; redeployed to Vercel |
+| 2026-10-11T00:54:00+05:30 | Antigravity (Google DeepMind) | Audio unlock & stage chat prompt chips | `src/stage-chat.ts`, `src/landing.ts`, `src/speech.ts`, `server/limits.ts`, `index.html` | Reviewed by Shijas T | Audio playback verified via `/tts`; prompt chips and text input active |
+

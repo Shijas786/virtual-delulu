@@ -16,6 +16,7 @@ import {
 } from "./speech";
 import { showLanding } from "./landing";
 import { Hud } from "./hud";
+import { StageChat } from "./stage-chat";
 import { UserPuppetController, type HandData } from "./user-controller";
 import { AiPuppetController } from "./ai-controller";
 import { SceneController } from "./scene-controller";
@@ -55,6 +56,7 @@ scene.add(theater.root);
 // JS side only handles the two pieces CSS can't reach: the THREE
 // scene background (transparent vs. opaque) and the theater rig
 // visibility (hidden in any camera-* mode).
+let stageChat: StageChat | null = null;
 const DEBUG_MODES = ["normal", "camera", "camera-markers", "camera-puppet"] as const;
 type DebugMode = (typeof DEBUG_MODES)[number];
 let debugIdx = 0;
@@ -63,6 +65,7 @@ function setDebugMode(mode: DebugMode) {
   else document.body.dataset.debug = mode;
   scene.background = mode === "normal" ? SCENE_BG : null;
   theater.setVisible(mode === "normal");
+  stageChat?.setVisible(mode === "normal");
   // Demo-prep: don't run the user↔AI loop in any camera mode.
   // STT stops, outbound user events are dropped, ongoing TTS is
   // silenced. Idle-escalations still cost LLM calls server-side
@@ -374,6 +377,11 @@ showLanding().then(async ({ stream, userPickedVoiceURI, brainSize }) => {
   brain = b;
 
   b.start();
+  stageChat = new StageChat({
+    onSend: (text) => {
+      b.sendUserSpeech(text);
+    },
+  });
   onVoicesReady(() => {
     const voices = snapshotVoices();
     if (voices && voices.length > 0) b.sendVoiceList(voices);

@@ -89,6 +89,16 @@ export class Brain {
     if (this.ws?.readyState === WebSocket.OPEN) this.send({ type: "hello" });
   }
 
+  /** Send speech text as if recognized by speech-to-text.
+   *  Useful for on-stage prompt chips, text input, and quick commands. */
+  sendUserSpeech(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    this.send({ type: "transcript", text: trimmed, final: true });
+    this.handlers.onAiThinking?.(true);
+    this.handlers.onTranscript?.(trimmed, true);
+  }
+
   /** Pause the user-driven loop: stop STT, drop outbound user events,
    *  drop inbound action / cancel_speech, and silence any ongoing TTS
    *  so the transition into debug-camera mode is clean. WS stays

@@ -138,8 +138,11 @@ const server = Bun.serve<SocketData, string>({
       }
       try {
         const audio = await synthesize(text);
-        return new Response(new Blob([audio], { type: "audio/mpeg" }), {
-          headers: { "cache-control": "no-store" },
+        return new Response(audio, {
+          headers: {
+            "content-type": "audio/mpeg",
+            "cache-control": "no-store",
+          },
         });
       } catch (err) {
         console.warn("[tts] synthesize failed:", err);
