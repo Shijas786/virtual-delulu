@@ -182,14 +182,25 @@ export class OpenAIBackend implements LLMBackend {
 
   async generateAction(messages: ChatMessage[], opts?: { tag?: string }): Promise<Action> {
     const turns: OpenAI.ChatCompletionMessageParam[] = [];
+    let hasSystem = false;
     for (const m of messages) {
       if (m.role === "system") {
-        turns.push({ role: "system", content: m.content });
+        hasSystem = true;
+        turns.push({
+          role: "system",
+          content: `${m.content}\n\nOutput strictly valid JSON conforming to the puppet action format with fields: say (string or null), emotion ("neutral"|"smug"|"curious"|"excited"|"bored"|"surprised"), gaze ("user"|"away"|"down"|"up"), gesture ("none"|"wave"|"shrug"|"lean_in"|"nod"|"shake"|"jump"|"spin"|"wiggle"|"raise_hands"|"swing_hands"), and effects (array of scene effects).`,
+        });
       } else if (m.role === "assistant") {
         turns.push({ role: "assistant", content: m.content });
       } else {
         turns.push({ role: "user", content: m.content });
       }
+    }
+    if (!hasSystem) {
+      turns.unshift({
+        role: "system",
+        content: "Output strictly valid JSON with keys: say, emotion, gaze, gesture, effects.",
+      });
     }
 
     const lastTurn = turns[turns.length - 1];

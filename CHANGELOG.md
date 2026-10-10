@@ -4,6 +4,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
+## 2026-10-11T00:29:00+05:30 — Fix OpenAI JSON schema prompt constraint for real-time speech
+
+- Changed: `server/llm.ts`
+- Why: OpenAI API requires the word 'json' in messages when `response_format: { type: "json_object" }` is enabled; added explicit JSON schema instructions to system prompt so live speech recognition turns trigger AI responses without 400 errors.
+- Validation: Verified live WebSocket turn-by-turn conversation and speech responses via `ws://localhost:3001/ws`.
+- Limitations: None.
+
 ## 2026-10-11T00:19:00+05:30 — Secure environment configuration & .env.example
 
 - Changed: `.gitignore`, `.env.example`
