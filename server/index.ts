@@ -42,7 +42,7 @@ const MODEL_FOR_BRAIN_ANTHROPIC: Record<BrainSize, string> = {
   small: "claude-haiku-4-5-20251001",
 };
 const MODEL_FOR_BRAIN_OPENAI: Record<BrainSize, string> = {
-  large: process.env.OPENAI_MODEL_LARGE ?? "gpt-6-astra",
+  large: process.env.OPENAI_MODEL_LARGE ?? "gpt-6-luna",
   small: process.env.OPENAI_MODEL_SMALL ?? "gpt-4o-mini",
 };
 // Shared abuse limits. Per-session budget is created inside each Session.

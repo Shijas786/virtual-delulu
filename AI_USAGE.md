@@ -14,5 +14,7 @@ Use Codex during the hackathon and briefly document its actual contribution here
 | 2026-10-11T00:54:00+05:30 | Antigravity (Google DeepMind) | Audio unlock & stage chat prompt chips | `src/stage-chat.ts`, `src/landing.ts`, `src/speech.ts`, `server/limits.ts`, `index.html` | Reviewed by Shijas T | Audio playback verified via `/tts`; prompt chips and text input active |
 | 2026-10-11T01:29:00+05:30 | Antigravity (Google DeepMind) | Align architecture and puppets with rhmoller reference | `src/puppet.ts`, `src/puppet-stage.ts`, `src/landing.ts`, `src/hud.ts`, `index.html` | Reviewed by Shijas T | `bun test` 53 pass; Vite build succeeds |
 | 2026-10-11T01:44:00+05:30 | Antigravity (Google DeepMind) | Upgrade primary LLM and 3D asset generator to GPT-6 Astra | `server/index.ts`, `server/llm.ts`, `server/asset-generator.ts`, `index.html` | Reviewed by Shijas T | `bun test` 53 pass; live completion and asset generation verified |
+| 2026-10-11T02:38:00+05:30 | Antigravity (Google DeepMind) | Switch primary LLM and 3D asset generator to GPT-6 Luna | `server/index.ts`, `server/llm.ts`, `server/asset-generator.ts`, `index.html` | Reviewed by Shijas T | `bun test` 53 pass; live completion and speed verified |
+
 
 

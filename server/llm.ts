@@ -175,7 +175,7 @@ export class OpenAIBackend implements LLMBackend {
   readonly name: string;
   private client: OpenAI;
 
-  constructor(private readonly model: string = "gpt-6-astra", apiKey?: string) {
+  constructor(private readonly model: string = "gpt-6-luna", apiKey?: string) {
     this.name = `openai-${model}`;
     this.client = new OpenAI({ apiKey: apiKey ?? process.env.OPENAI_API_KEY ?? "dummy" });
   }

@@ -4,6 +4,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
+## 2026-10-11T02:38:00+05:30 — Switch primary LLM model and 3D asset generator to GPT-6 Luna for faster latency
+
+- Changed: `server/index.ts`, `server/llm.ts`, `server/asset-generator.ts`, `server/openai.test.ts`, `index.html`, `.env`
+- Why: Switched large brain model and 3D asset generator to OpenAI `gpt-6-luna` for faster, low-latency puppet dialogues and rapid asset generation without wait times.
+- Validation: Verified live completion from `gpt-6-luna`; verified 53 `bun test` suite passing; verified asset generation loop.
+- Limitations: None.
+
 ## 2026-10-11T01:44:00+05:30 — Upgrade primary LLM model and 3D asset generator to GPT-6 Astra
 
 - Changed: `server/index.ts`, `server/llm.ts`, `server/asset-generator.ts`, `server/openai.test.ts`, `index.html`, `.env`
