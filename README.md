@@ -1,9 +1,21 @@
-# Virtual Delulu - Puppet Theater
+# Virtual Delulu — Puppet Theater
+
+> **DevDay Exchange Community Hackathon: Kochi** — 10–11 October 2026
 
 A virtual puppet theater that runs in your browser. Your webcam tracks your
-hand with MediaPipe and animates a puppet on stage. Opposite you, a
-cheerful AI-driven hand-puppet reacts to what you say and do, driven by
-Claude Opus 4.7.
+hand with MediaPipe and animates a puppet on stage. Opposite you, Delulu —
+a cheerful AI-driven ghost character from Kerala — reacts to what you say
+and do in real time, driven by Claude Opus 4.7.
+
+## Project overview
+
+- **Project name:** Virtual Delulu — Puppet Theater
+- **Short description:** An AI co-creative puppet theater in the browser. Raise a hand, speak, and Delulu (an AI hand-puppet) performs, reacts, and generates brand-new 3D props on demand — all in real time.
+- **Team:** Shijas T (@Shijas786), Allen P. Jison (@LyfSeeker)
+- **Working demo:** `bun install && bun run dev:server && bun run dev` → open `http://localhost:5173`, grant webcam + mic, raise a hand.
+- **Technology stack:** Bun · Vite · TypeScript · Three.js · MediaPipe Hands · Web Speech API · Anthropic Claude Opus 4.7 · ElevenLabs TTS
+
+See [SUBMISSION.md](./SUBMISSION.md) · [CHANGELOG.md](./CHANGELOG.md) · [AI_USAGE.md](./AI_USAGE.md) · [RULES.md](./RULES.md)
 
 ## Stack
 
