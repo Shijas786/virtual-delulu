@@ -4,6 +4,15 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
+## 2026-10-11T00:08:00+05:30 — Delulu aesthetic cuteness boost & OpenAI LLM/Audio migration
+
+- Changed: `src/puppet-stage.ts`, `server/llm.ts`, `server/tts.ts`, `server/asset-generator.ts`, `server/index.ts`, `server/openai.test.ts`, `SUBMISSION.md`, `README.md`
+- Why:
+  1. Enhanced Delulu's visual cuteness: anime double-sparkle glint eyes, midnight-violet pupils, delicate upper eyelashes, radiant rosy blush with white cheek highlights, golden jasmine centers, sweet kitten/cupid smile, gold maang tikka droplet, and face-framing curl tendrils.
+  2. Switched LLM backend and Audio TTS to OpenAI: implemented `OpenAIBackend` (`gpt-4o` / `gpt-4o-mini`) with JSON structured actions and voice selection; integrated OpenAI Audio Speech API (`tts-1`, voice: `nova`) for expressive character speech; supported on-demand 3D asset generation via OpenAI.
+- Validation: `bun test` passes 53 tests (including new `openai.test.ts`); production build succeeded; live deployed to Vercel.
+- Limitations: Live speech synthesis requires `OPENAI_API_KEY` set in server environment.
+
 ## 2026-10-10T23:46:00+05:30 — Deploy web client to Vercel
 
 - Changed: `SUBMISSION.md`, `README.md`, `.gitignore`

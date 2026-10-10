@@ -374,64 +374,127 @@ export class StagePuppet extends Puppet {
   private addJasmineAndBraid() {
     const jasmine = new THREE.MeshStandardMaterial({ color: 0xfff8ea, roughness: 0.75 });
     const center = new THREE.MeshStandardMaterial({ color: 0xd5aa61, roughness: 0.55, metalness: 0.25 });
-    const flower = new THREE.SphereGeometry(0.075, 10, 8);
+    const flower = new THREE.SphereGeometry(0.08, 12, 10);
     for (let i = 0; i < 9; i++) {
       const x = -0.66 + (i / 8) * 1.32;
       const y = 0.94 - Math.abs(x) * 0.12;
       const z = 0.38 + (1 - Math.abs(x)) * 0.1;
       const blossom = new THREE.Mesh(flower, jasmine);
       blossom.position.set(x, y, z);
-      blossom.scale.set(1, 0.8, 0.72);
+      blossom.scale.set(1, 0.85, 0.75);
       this.upperJaw.add(blossom);
+      // Golden center for each jasmine bud
+      const budCore = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), center);
+      budCore.position.set(x, y + 0.01, z + 0.05);
+      this.upperJaw.add(budCore);
     }
 
-    // Soft cheeks, a little smile, and eye glints make the inherited rig
-    // read as a sweet character even while Delulu is between lines.
+    // Soft glowing rosy-peach cheeks, cute cheek highlights, big sparkling
+    // anime eyes with double glints, and a sweet kitten smile make Delulu
+    // charming, vibrant, and lovable.
     const blush = new THREE.MeshStandardMaterial({
-      color: 0xe99da7,
-      roughness: 0.8,
+      color: 0xff7b95,
+      roughness: 0.7,
       transparent: true,
-      opacity: 0.58,
+      opacity: 0.65,
+      emissive: 0xff8ca3,
+      emissiveIntensity: 0.15,
     });
+    const cheekGlintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
     for (const side of [-1, 1]) {
-      const cheek = new THREE.Mesh(new THREE.SphereGeometry(0.105, 14, 10), blush);
-      cheek.position.set(side * 0.57, 0.2, 0.77);
-      cheek.scale.set(1.35, 0.72, 0.28);
+      // Rosy cheek
+      const cheek = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), blush);
+      cheek.position.set(side * 0.55, 0.18, 0.79);
+      cheek.scale.set(1.4, 0.8, 0.3);
       this.upperJaw.add(cheek);
 
+      // Cute cheek highlight sparkle
+      const cheekSparkle = new THREE.Mesh(new THREE.SphereGeometry(0.022, 10, 8), cheekGlintMat);
+      cheekSparkle.position.set(side * 0.57, 0.21, 0.83);
+      this.upperJaw.add(cheekSparkle);
+
+      // Eye white: slightly larger and rounder
       const eye = side < 0 ? this.leftEye : this.rightEye;
-      eye.children[0]!.scale.x = 1.14;
-      eye.children[0]!.scale.z = 0.96;
-      const glint = new THREE.Mesh(
-        new THREE.SphereGeometry(0.035, 10, 8),
+      eye.children[0]!.scale.set(1.22, 1.25, 1.05);
+
+      // Pupil: tint to deep glistening midnight violet
+      const pupilMesh = eye.children[1];
+      if (pupilMesh instanceof THREE.Mesh) {
+        pupilMesh.scale.set(1.2, 1.2, 1.0);
+        if (pupilMesh.material instanceof THREE.MeshStandardMaterial) {
+          pupilMesh.material.color.set(0x22132a);
+          pupilMesh.material.roughness = 0.25;
+        }
+      }
+
+      // Main big bright sparkle glint (top-left)
+      const glint1 = new THREE.Mesh(
+        new THREE.SphereGeometry(0.048, 12, 10),
         new THREE.MeshBasicMaterial({ color: 0xffffff }),
       );
-      glint.position.set(-0.055, 0.07, 0.235);
-      eye.add(glint);
+      glint1.position.set(-0.065, 0.08, 0.24);
+      eye.add(glint1);
+
+      // Secondary cute little bounce twinkle glint (bottom-right)
+      const glint2 = new THREE.Mesh(
+        new THREE.SphereGeometry(0.025, 10, 8),
+        new THREE.MeshBasicMaterial({ color: 0xf5eeff }),
+      );
+      glint2.position.set(0.045, -0.05, 0.242);
+      eye.add(glint2);
+
+      // Cute anime curved upper lash
+      const lashCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-side * 0.14, 0.2, 0.19),
+        new THREE.Vector3(0, 0.26, 0.22),
+        new THREE.Vector3(side * 0.16, 0.22, 0.2),
+        new THREE.Vector3(side * 0.24, 0.25, 0.16),
+      ]);
+      const lash = new THREE.Mesh(
+        new THREE.TubeGeometry(lashCurve, 14, 0.016, 6, false),
+        new THREE.MeshStandardMaterial({ color: 0x22132a, roughness: 0.5 }),
+      );
+      eye.add(lash);
     }
+
+    // Sweet kitten / chibi smile with slight center cupid's bow and upturned corners
     const smileCurve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-0.18, 0.12, 0.973),
-      new THREE.Vector3(-0.1, 0.065, 0.991),
-      new THREE.Vector3(0, 0.05, 0.996),
-      new THREE.Vector3(0.1, 0.065, 0.991),
-      new THREE.Vector3(0.18, 0.12, 0.973),
+      new THREE.Vector3(-0.17, 0.13, 0.975),
+      new THREE.Vector3(-0.08, 0.055, 0.993),
+      new THREE.Vector3(0, 0.08, 0.996),
+      new THREE.Vector3(0.08, 0.055, 0.993),
+      new THREE.Vector3(0.17, 0.13, 0.975),
     ]);
     const smile = new THREE.Mesh(
-      new THREE.TubeGeometry(smileCurve, 16, 0.018, 8, false),
-      new THREE.MeshStandardMaterial({ color: 0x8f4a59, roughness: 0.7 }),
+      new THREE.TubeGeometry(smileCurve, 18, 0.02, 8, false),
+      new THREE.MeshStandardMaterial({ color: 0x9e3f56, roughness: 0.55 }),
     );
     this.upperJaw.add(smile);
 
-    // The tiny red bindi and warm gold earrings are unmistakable Kerala
-    // details, kept clear of the inherited eye and cosmetic attachment slots.
+    // The tiny red bindi and warm gold earrings
     const bindi = new THREE.Mesh(
-      new THREE.SphereGeometry(0.055, 12, 10),
-      new THREE.MeshStandardMaterial({ color: 0xb84350, roughness: 0.45 }),
+      new THREE.SphereGeometry(0.058, 12, 10),
+      new THREE.MeshStandardMaterial({
+        color: 0xc23447,
+        roughness: 0.4,
+        emissive: 0x992233,
+        emissiveIntensity: 0.2,
+      }),
     );
     bindi.position.set(0, 0.78, 0.84);
     this.upperJaw.add(bindi);
 
-    const earring = new THREE.Mesh(new THREE.TorusGeometry(0.105, 0.026, 8, 16), center);
+    // Tiny gold maang tikka droplet above the bindi
+    const tikkaDrop = new THREE.Mesh(
+      new THREE.ConeGeometry(0.035, 0.08, 8),
+      center,
+    );
+    tikkaDrop.position.set(0, 0.88, 0.8);
+    tikkaDrop.rotation.z = Math.PI;
+    this.upperJaw.add(tikkaDrop);
+
+    const earring = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.028, 8, 16), center);
     for (const side of [-1, 1]) {
       const ring = earring.clone();
       ring.position.set(side * 0.98, -0.04, 0.12);
@@ -440,6 +503,19 @@ export class StagePuppet extends Puppet {
 
     const hairMat = new THREE.MeshStandardMaterial({ color: PUPPET_THEMES.stage.hair, roughness: 0.82 });
     this.hairMats.push(hairMat);
+
+    // Cute face-framing curl tendrils
+    for (const side of [-1, 1]) {
+      const curlCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(side * 0.72, 0.45, 0.55),
+        new THREE.Vector3(side * 0.82, 0.15, 0.62),
+        new THREE.Vector3(side * 0.78, -0.15, 0.58),
+        new THREE.Vector3(side * 0.72, -0.32, 0.5),
+      ]);
+      const curl = new THREE.Mesh(new THREE.TubeGeometry(curlCurve, 16, 0.045, 8, false), hairMat);
+      this.upperJaw.add(curl);
+    }
+
     const braidCurve = new THREE.CatmullRomCurve3([
       new THREE.Vector3(0.72, 0.28, -0.05),
       new THREE.Vector3(0.96, -0.08, -0.08),
@@ -449,7 +525,7 @@ export class StagePuppet extends Puppet {
     const braid = new THREE.Mesh(new THREE.TubeGeometry(braidCurve, 20, 0.12, 10, false), hairMat);
     this.upperJaw.add(braid);
 
-    const braidFlower = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), jasmine);
+    const braidFlower = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 8), jasmine);
     braidFlower.position.set(0.91, -0.35, 0.03);
     this.upperJaw.add(braidFlower);
   }

@@ -13,7 +13,7 @@ and do in real time, driven by Claude Opus 4.7.
 - **Short description:** An AI co-creative puppet theater in the browser. Raise a hand, speak, and Delulu (an AI hand-puppet) performs, reacts, and generates brand-new 3D props on demand — all in real time.
 - **Team:** Shijas T (@Shijas786), Allen P. Jison (@LyfSeeker)
 - **Working demo:** https://virtual-delulu.vercel.app (or locally: `bun install && bun run dev:server && bun run dev` → `http://localhost:5173`). Grant webcam + mic, raise a hand.
-- **Technology stack:** Bun · Vite · TypeScript · Three.js · MediaPipe Hands · Web Speech API · Anthropic Claude Opus 4.7 · ElevenLabs TTS
+- **Technology stack:** Bun · Vite · TypeScript · Three.js · MediaPipe Hands · Web Speech API · OpenAI GPT-4o (or Claude Opus 4.7) · OpenAI Audio TTS
 
 See [SUBMISSION.md](./SUBMISSION.md) · [CHANGELOG.md](./CHANGELOG.md) · [AI_USAGE.md](./AI_USAGE.md) · [RULES.md](./RULES.md)
 
@@ -24,8 +24,8 @@ See [SUBMISSION.md](./SUBMISSION.md) · [CHANGELOG.md](./CHANGELOG.md) · [AI_US
 - **three.js** — 3D scene
 - **@mediapipe/hands** — hand landmark tracking
 - **Web Speech API** — browser speech recognition; browser synthesis as TTS fallback
-- **@elevenlabs/elevenlabs-js** — primary TTS, gives the AI puppet an expressive voice
-- **@anthropic-ai/sdk** — Claude Opus 4.7 drives the AI puppet's dialogue and emotes
+- **openai** — OpenAI Audio TTS (voice: Nova) gives the puppet an expressive voice; GPT-4o drives dialogue and scene direction
+- **@anthropic-ai/sdk** — alternative LLM backend support
 
 ## Requirements
 
@@ -44,12 +44,9 @@ See [SUBMISSION.md](./SUBMISSION.md) · [CHANGELOG.md](./CHANGELOG.md) · [AI_US
 
 **API keys**
 
-- **`ANTHROPIC_API_KEY`** *(required)* — the AI puppet's brain runs on
-  Claude. Get one at [console.anthropic.com](https://console.anthropic.com).
-- **`ELEVENLABS_API_KEY`** *(optional)* — gives the puppet an expressive
-  voice. Without it, the app falls back to your browser's built-in
-  speech synthesis (functional, but flat). Get one at
-  [elevenlabs.io](https://elevenlabs.io).
+- **`OPENAI_API_KEY`** *(recommended/primary)* — drives Delulu's brain (GPT-4o) and voice (OpenAI TTS).
+- **`ANTHROPIC_API_KEY`** *(optional)* — alternative backend if running with Claude.
+- **`ELEVENLABS_API_KEY`** *(optional)* — alternative TTS provider. Without server TTS keys, falls back to browser SpeechSynthesis.
 
 **Computer specs**
 

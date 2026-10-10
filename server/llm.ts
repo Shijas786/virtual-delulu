@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { ACTION_JSON_SCHEMA, type Action, type VoiceInfo } from "./protocol.ts";
 
 export type ChatMessage =
@@ -163,6 +164,115 @@ ${table}`;
       const parsed = JSON.parse(textBlock.text) as { voiceURI?: unknown };
       if (typeof parsed.voiceURI !== "string" || parsed.voiceURI.length === 0) return null;
       // Verify it actually exists in the list — belt and braces.
+      return list.some((v) => v.voiceURI === parsed.voiceURI) ? parsed.voiceURI : null;
+    } catch {
+      return null;
+    }
+  }
+}
+
+export class OpenAIBackend implements LLMBackend {
+  readonly name: string;
+  private client: OpenAI;
+
+  constructor(private readonly model: string = "gpt-4o", apiKey?: string) {
+    this.name = `openai-${model}`;
+    this.client = new OpenAI({ apiKey: apiKey ?? process.env.OPENAI_API_KEY ?? "dummy" });
+  }
+
+  async generateAction(messages: ChatMessage[], opts?: { tag?: string }): Promise<Action> {
+    const turns: OpenAI.ChatCompletionMessageParam[] = [];
+    for (const m of messages) {
+      if (m.role === "system") {
+        turns.push({ role: "system", content: m.content });
+      } else if (m.role === "assistant") {
+        turns.push({ role: "assistant", content: m.content });
+      } else {
+        turns.push({ role: "user", content: m.content });
+      }
+    }
+
+    const lastTurn = turns[turns.length - 1];
+    const lastPreview =
+      typeof lastTurn?.content === "string" ? truncate(lastTurn.content, 200) : "(non-text)";
+    const tag = opts?.tag ? ` ${opts.tag}` : "";
+    console.log(
+      `[brain${tag} →] ${this.model} turns=${turns.length} last(${lastTurn?.role})="${lastPreview}"`,
+    );
+    const t0 = performance.now();
+
+    const response = await this.client.chat.completions.create({
+      model: this.model,
+      messages: turns,
+      response_format: { type: "json_object" },
+    });
+
+    const dt = Math.round(performance.now() - t0);
+    const choice = response.choices[0];
+    const text = choice?.message?.content;
+    if (!text) {
+      throw new Error(`OpenAI returned no text content: ${JSON.stringify(response)}`);
+    }
+    const usage = response.usage;
+    console.log(
+      `[brain${tag} ←] ${dt}ms in=${usage?.prompt_tokens ?? "?"} out=${usage?.completion_tokens ?? "?"}`,
+    );
+
+    const obj = JSON.parse(text);
+    const fxCount = Array.isArray(obj.effects) ? obj.effects.length : 0;
+    const sayPreview = typeof obj.say === "string" ? truncate(obj.say, 120) : "";
+    console.log(
+      `[brain${tag}] reply: say="${sayPreview}" emotion=${obj.emotion ?? "?"} gaze=${obj.gaze ?? "?"} gesture=${obj.gesture ?? "?"} fx=${fxCount}`,
+    );
+    return {
+      say: typeof obj.say === "string" ? obj.say : undefined,
+      emotion: obj.emotion,
+      gaze: obj.gaze,
+      gesture: obj.gesture,
+      effects: Array.isArray(obj.effects) ? obj.effects : undefined,
+    };
+  }
+
+  async pickVoice(voices: VoiceInfo[]): Promise<string | null> {
+    if (voices.length === 0) return null;
+    const list = voices.slice(0, 60);
+    const table = list
+      .map(
+        (v, i) =>
+          `${i}. ${JSON.stringify(v.name)} lang=${v.lang} local=${v.localService} uri=${JSON.stringify(v.voiceURI)}`,
+      )
+      .join("\n");
+
+    const prompt = `Pick the best voice for a sweet, cheerful, friendly female hand-puppet (Delulu) speaking English to kids. The voice should sound:
+- Friendly, warm, expressive, feminine or cute
+- English (en-*), any dialect
+- Clear and pleasant for kids
+
+Reject voices that sound scary, robotic, or harsh.
+Output JSON only: {"voiceURI": "exact_uri_here"}
+If no voice fits, return {"voiceURI": ""}.
+
+Voices:
+${table}`;
+
+    console.log(`[voice-pick] → ${this.model} voices=${list.length}`);
+    const t0 = performance.now();
+    const response = await this.client.chat.completions.create({
+      model: this.model,
+      messages: [
+        { role: "system", content: VOICE_PICK_SYSTEM },
+        { role: "user", content: prompt },
+      ],
+      response_format: { type: "json_object" },
+    });
+
+    const dt = Math.round(performance.now() - t0);
+    console.log(`[voice-pick] ← ${dt}ms`);
+    const text = response.choices[0]?.message?.content;
+    if (!text) return null;
+    try {
+      const parsed = JSON.parse(text) as { voiceURI?: unknown };
+      if (typeof parsed.voiceURI !== "string" || parsed.voiceURI.length === 0) return null;
       return list.some((v) => v.voiceURI === parsed.voiceURI) ? parsed.voiceURI : null;
     } catch {
       return null;

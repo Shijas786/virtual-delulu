@@ -1,5 +1,5 @@
 import type { BrainSize, ClientEvent, ServerEvent } from "./protocol.ts";
-import { AnthropicBackend } from "./llm.ts";
+import { AnthropicBackend, OpenAIBackend } from "./llm.ts";
 import { Session } from "./session.ts";
 import { AssetGenerator } from "./asset-generator.ts";
 import { synthesize } from "./tts.ts";
@@ -26,19 +26,24 @@ import {
   }
 }
 
-if (!process.env.ANTHROPIC_API_KEY) {
+if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
   console.error(
-    "ANTHROPIC_API_KEY is not set. Export it before starting the server.",
+    "Neither OPENAI_API_KEY nor ANTHROPIC_API_KEY is set. Export OPENAI_API_KEY before starting the server.",
   );
   process.exit(1);
 }
 
+const USE_OPENAI = Boolean(process.env.OPENAI_API_KEY) || !process.env.ANTHROPIC_API_KEY;
+
 const PORT = Number(process.env.PORT ?? 3001);
-// Map brain size choice → Claude model. Defaults to large/Opus when the
-// query param is missing or unrecognized.
-const MODEL_FOR_BRAIN: Record<BrainSize, string> = {
+// Map brain size choice → model.
+const MODEL_FOR_BRAIN_ANTHROPIC: Record<BrainSize, string> = {
   large: "claude-opus-4-7",
   small: "claude-haiku-4-5-20251001",
+};
+const MODEL_FOR_BRAIN_OPENAI: Record<BrainSize, string> = {
+  large: process.env.OPENAI_MODEL_LARGE ?? "gpt-4o",
+  small: process.env.OPENAI_MODEL_SMALL ?? "gpt-4o-mini",
 };
 // Shared abuse limits. Per-session budget is created inside each Session.
 const ipCounter = new IpConnectionCounter();
@@ -164,7 +169,9 @@ const server = Bun.serve<SocketData, string>({
         console.log("[ws →]", formatServerEvent(event));
         ws.send(JSON.stringify(event));
       };
-      const llm = new AnthropicBackend(MODEL_FOR_BRAIN[ws.data.brain]);
+      const llm = USE_OPENAI
+        ? new OpenAIBackend(MODEL_FOR_BRAIN_OPENAI[ws.data.brain])
+        : new AnthropicBackend(MODEL_FOR_BRAIN_ANTHROPIC[ws.data.brain]);
       // Local dev (clientIpFrom returned the "local" fallback because
       // no Fly / x-forwarded-for headers were present) bypasses the
       // per-session rate gate. The lifetime cap and global daily cap
@@ -249,5 +256,5 @@ function formatServerEvent(event: ServerEvent): string {
 console.log(`[server] listening on http://localhost:${server.port}`);
 console.log(`[server] WS endpoint: ws://localhost:${server.port}/ws`);
 console.log(
-  `[server] models: large=${MODEL_FOR_BRAIN.large}, small=${MODEL_FOR_BRAIN.small}`,
+  `[server] backend=${USE_OPENAI ? "openai" : "anthropic"} models: large=${USE_OPENAI ? MODEL_FOR_BRAIN_OPENAI.large : MODEL_FOR_BRAIN_ANTHROPIC.large}, small=${USE_OPENAI ? MODEL_FOR_BRAIN_OPENAI.small : MODEL_FOR_BRAIN_ANTHROPIC.small}`,
 );

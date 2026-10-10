@@ -16,17 +16,29 @@
 //   the stage puppet's stall line covers the brief silence and it can
 //   comment naturally on the next turn that it couldn't picture it.
 
+import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { ASSET_SPEC_JSON_SCHEMA, type AssetSpec } from "./protocol.ts";
 import { SYSTEM_PROMPT } from "./asset-generator-prompt.ts";
 
-const ASSET_MODEL = "claude-opus-4-7";
+const ANTHROPIC_ASSET_MODEL = "claude-opus-4-7";
+const OPENAI_ASSET_MODEL = process.env.OPENAI_ASSET_MODEL ?? "gpt-4o";
 
 export class AssetGenerator {
-  private client = new Anthropic();
+  private anthropicClient: Anthropic | null = null;
+  private openaiClient: OpenAI | null = null;
   // Map<descriptionHash, AssetSpec>. In-process — survives across
   // sessions while the server is up. Plenty for the demo.
   private cache = new Map<string, AssetSpec>();
+
+  constructor() {
+    if (process.env.OPENAI_API_KEY) {
+      this.openaiClient = new OpenAI();
+    }
+    if (process.env.ANTHROPIC_API_KEY) {
+      this.anthropicClient = new Anthropic();
+    }
+  }
 
   /**
    * Design a new asset from a free-form description. Returns the spec
@@ -57,35 +69,53 @@ export class AssetGenerator {
 
     const userPrompt = composeUserPrompt(args);
     try {
-      const response = await this.client.messages.create({
-        model: ASSET_MODEL,
-        max_tokens: 8000,
-        // Long stable prefix → cache hits across requests. Cache marker
-        // must live on a content block within `system`, not as a
-        // top-level call arg.
-        system: [
-          {
-            type: "text",
-            text: SYSTEM_PROMPT,
-            cache_control: { type: "ephemeral" },
+      let rawJson: string | null = null;
+
+      if (this.openaiClient) {
+        console.log(`[asset-gen] requesting via OpenAI (${OPENAI_ASSET_MODEL})`);
+        const response = await this.openaiClient.chat.completions.create({
+          model: OPENAI_ASSET_MODEL,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: userPrompt },
+          ],
+          response_format: { type: "json_object" },
+        });
+        rawJson = response.choices[0]?.message?.content ?? null;
+      } else if (this.anthropicClient) {
+        console.log(`[asset-gen] requesting via Anthropic (${ANTHROPIC_ASSET_MODEL})`);
+        const response = await this.anthropicClient.messages.create({
+          model: ANTHROPIC_ASSET_MODEL,
+          max_tokens: 8000,
+          system: [
+            {
+              type: "text",
+              text: SYSTEM_PROMPT,
+              cache_control: { type: "ephemeral" },
+            },
+          ],
+          messages: [{ role: "user", content: userPrompt }],
+          output_config: {
+            effort: "medium",
+            format: { type: "json_schema", schema: ASSET_SPEC_JSON_SCHEMA.schema },
           },
-        ],
-        messages: [{ role: "user", content: userPrompt }],
-        output_config: {
-          effort: "medium",
-          format: { type: "json_schema", schema: ASSET_SPEC_JSON_SCHEMA.schema },
-        },
-      });
-      if (response.stop_reason === "max_tokens") {
-        console.warn("[asset-gen] hit max_tokens — output truncated");
+        });
+        if (response.stop_reason === "max_tokens") {
+          console.warn("[asset-gen] hit max_tokens — output truncated");
+          return null;
+        }
+        const textBlock = response.content.find((b) => b.type === "text");
+        rawJson = textBlock && textBlock.type === "text" ? textBlock.text : null;
+      } else {
+        console.warn("[asset-gen] neither OpenAI nor Anthropic API key configured");
         return null;
       }
-      const textBlock = response.content.find((b) => b.type === "text");
-      if (!textBlock || textBlock.type !== "text") {
-        console.warn("[asset-gen] no text block in response");
+
+      if (!rawJson) {
+        console.warn("[asset-gen] no JSON content in model response");
         return null;
       }
-      const parsed = JSON.parse(textBlock.text) as AssetSpec;
+      const parsed = JSON.parse(rawJson) as AssetSpec;
       if (!validateSpec(parsed)) {
         console.warn("[asset-gen] schema mismatch in parsed spec");
         return null;
