@@ -41,6 +41,61 @@ const CAMERA_Z = 8;
 // margin so props stay clear of the frame edges at every anchor.
 const PROP_MARGIN = 0.6;
 
+export type TheaterThemeName = "carnival" | "space" | "rainbow";
+
+export const THEATER_THEMES: Record<
+  TheaterThemeName,
+  {
+    gold: number;
+    goldHi: number;
+    goldLo: number;
+    curtain: number;
+    curtainHi: number;
+    curtainLo: number;
+    wood: number;
+    woodDark: number;
+    backdrop: number;
+    light: number;
+  }
+> = {
+  carnival: {
+    gold: 0xc9a064,
+    goldHi: 0xe3c080,
+    goldLo: 0x8a6d3a,
+    curtain: 0x8a1010,
+    curtainHi: 0xb02020,
+    curtainLo: 0x4a0808,
+    wood: 0x5a2a18,
+    woodDark: 0x2e1408,
+    backdrop: 0x120505,
+    light: 0xffb070,
+  },
+  space: {
+    gold: 0x00d2d3,
+    goldHi: 0x54a0ff,
+    goldLo: 0x0abde3,
+    curtain: 0x341f97,
+    curtainHi: 0x5f27cd,
+    curtainLo: 0x1a0f5a,
+    wood: 0x0c2461,
+    woodDark: 0x071133,
+    backdrop: 0x03071e,
+    light: 0x48dbfb,
+  },
+  rainbow: {
+    gold: 0xffe066,
+    goldHi: 0xfff3b0,
+    goldLo: 0xf4a261,
+    curtain: 0xff6b8b,
+    curtainHi: 0xff8fa3,
+    curtainLo: 0xd9376e,
+    wood: 0x9c88ff,
+    woodDark: 0x7158e2,
+    backdrop: 0x2d112c,
+    light: 0xff9ff3,
+  },
+};
+
 export class Theater {
   readonly root = new THREE.Group();
   private group = new THREE.Group();
@@ -48,6 +103,8 @@ export class Theater {
   // `layout()` calls `this.group.clear()` on resize, which would
   // wipe any mounted props. Anchors live directly on `this.root`.
   private anchors: Record<string, THREE.Group> = {};
+  private currentTheme: TheaterThemeName = "carnival";
+  private footLight: THREE.PointLight | null = null;
 
   private mGold = new THREE.MeshStandardMaterial({ color: GOLD, roughness: 0.35, metalness: 0.5 });
   private mGoldHi = new THREE.MeshStandardMaterial({
@@ -87,6 +144,23 @@ export class Theater {
       const g = new THREE.Group();
       this.anchors[name] = g;
       this.root.add(g);
+    }
+  }
+
+  setTheme(themeName: TheaterThemeName) {
+    this.currentTheme = themeName;
+    const t = THEATER_THEMES[themeName] ?? THEATER_THEMES.carnival;
+    this.mGold.color.setHex(t.gold);
+    this.mGoldHi.color.setHex(t.goldHi);
+    this.mGoldLo.color.setHex(t.goldLo);
+    this.mRed.color.setHex(t.curtain);
+    this.mRedHi.color.setHex(t.curtainHi);
+    this.mRedLo.color.setHex(t.curtainLo);
+    this.mWood.color.setHex(t.wood);
+    this.mWoodDark.color.setHex(t.woodDark);
+    this.mBackdrop.color.setHex(t.backdrop);
+    if (this.footLight) {
+      this.footLight.color.setHex(t.light);
     }
   }
 
@@ -159,9 +233,11 @@ export class Theater {
 
     // Footlights — warm up-light; the visible bulbs would read as garish,
     // so use just a soft point light under the valance.
-    const up = new THREE.PointLight(0xffb070, 0.9, w * 1.2, 2);
+    const t = THEATER_THEMES[this.currentTheme] ?? THEATER_THEMES.carnival;
+    const up = new THREE.PointLight(t.light, 0.9, w * 1.2, 2);
     up.position.set(0, iyBot + 0.4, 1.5);
     this.group.add(up);
+    this.footLight = up;
   }
 
   private buildFrame(

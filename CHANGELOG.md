@@ -4,7 +4,15 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
-## 2026-10-11T07:18:00+05:30 — Enable live web deployment support on Vercel via Cloudflare Tunnel & CORS
+## 2026-10-11T07:28:00+05:30 — Add interactive Theme Switcher with 3 kids-friendly interfaces
+
+- Changed: `src/theme.ts`, `src/theater.ts`, `src/puppet.ts`, `src/stage-chat.ts`, `src/landing.ts`, `src/main.ts`, `index.html`, `tests/theme.test.ts`
+- Why: Added an interactive, playful Theme Switcher button floating at top-right and on the preflight landing screen with 3 distinct kid-friendly interfaces:
+  1. 🎪 Magic Circus: Classic toy theater with velvet curtains, golden ornaments, circus badges, and festive prompt chips.
+  2. 🚀 Cosmic Space: Futuristic galaxy adventure with neon cyan/turquoise proscenium lighting, deep void starry background, and astronaut/alien prompt chips.
+  3. 🌈 Candy Rainbow: Whimsical fairy wonderland with bubblegum pink/coral curtains, pastel lilac trim, unicorn/lollipop prompt chips, and soft sweet footlights.
+- Validation: Verified 56 `bun test` passing across 10 test suites; verified dynamic Three.js material recoloring and stage lighting in `theater.setTheme()`, `puppet.setPuppetTheme()`, and `stageChat.setTheme()`; verified Vite build and Vercel deployment.
+- Limitations: None.
 
 - Changed: `src/config.ts`, `src/main.ts`, `src/speech.ts`, `src/landing.ts`, `src/assetlab.ts`, `server/index.ts`, `server/limits.ts`
 - Why: Vercel serverless hosting cannot maintain persistent WebSockets (`/ws`) or run background Bun servers. Added dynamic backend endpoint routing in `src/config.ts`, enabled CORS & preflight OPTIONS handling in `server/index.ts`, allowed tunnel origins in `server/limits.ts`, and connected the live production deployment on Vercel to a secure Cloudflare Tunnel endpoint.

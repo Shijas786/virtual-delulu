@@ -72,6 +72,17 @@ export function showLanding(): Promise<LandingResult> {
     brainLargeBtn.addEventListener("click", () => setBrain("large"));
     brainSmallBtn.addEventListener("click", () => setBrain("small"));
 
+    // ---- World theme cards on landing ----
+    const themeCards = root.querySelectorAll<HTMLButtonElement>(".theme-world-card");
+    themeCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        const theme = card.dataset.themePick;
+        if (theme) {
+          window.dispatchEvent(new CustomEvent("theme-change-request", { detail: theme }));
+        }
+      });
+    });
+
     const setCameraStatus = (text: string, cls: "pending" | "ok" | "warn" | "err") => {
       cameraStatus.textContent = text;
       cameraStatus.className = `status ${cls}`;

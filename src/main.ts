@@ -18,6 +18,7 @@ import {
 import { showLanding } from "./landing";
 import { Hud } from "./hud";
 import { StageChat } from "./stage-chat";
+import { ThemeManager } from "./theme";
 import { UserPuppetController, type HandData } from "./user-controller";
 import { AiPuppetController } from "./ai-controller";
 import { SceneController } from "./scene-controller";
@@ -121,6 +122,14 @@ const aiController = new AiPuppetController(stagePuppet, {
   puppetZ: PUPPET_Z,
   depthScale: PUPPET_DEPTH_SCALE,
   speak,
+});
+
+const themeManager = new ThemeManager();
+themeManager.onChange((cfg) => {
+  theater.setTheme(cfg.theater);
+  userController.model.setPuppetTheme(cfg.userPuppet);
+  stagePuppet.setPuppetTheme(cfg.stagePuppet);
+  stageChat?.setTheme(cfg.id);
 });
 
 // Scene state + controller for cosmetics and scene props directed by
@@ -383,6 +392,7 @@ showLanding().then(async ({ stream, userPickedVoiceURI, brainSize }) => {
       b.sendUserSpeech(text);
     },
   });
+  stageChat.setTheme(themeManager.getTheme().id);
   onVoicesReady(() => {
     const voices = snapshotVoices();
     if (voices && voices.length > 0) b.sendVoiceList(voices);

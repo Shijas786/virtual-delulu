@@ -16,6 +16,13 @@ export const PUPPET_THEMES = {
   warm: { skin: 0xf2c0a8, shirt: 0xd98b4f, hair: 0x4a3a2e },
   cool: { skin: 0xc9d6c3, shirt: 0x7fb3a0, hair: 0x2a3a4a },
   stage: { skin: 0xc9b7e8, shirt: 0xe0a244, hair: 0x128a8a },
+  // Kid-friendly theme variations
+  carnivalUser: { skin: 0xf5c6a5, shirt: 0xe63946, hair: 0x452010 },
+  carnivalStage: { skin: 0xc9b7e8, shirt: 0xf4a261, hair: 0x2a9d8f },
+  spaceUser: { skin: 0xbbe1fa, shirt: 0x1b262c, hair: 0x0f4c75 },
+  spaceStage: { skin: 0xd8b4f8, shirt: 0x00f5d4, hair: 0x7209b7 },
+  rainbowUser: { skin: 0xffd1dc, shirt: 0xff6b8b, hair: 0xffe66d },
+  rainbowStage: { skin: 0xd0f4de, shirt: 0x9b5de5, hair: 0xf15bb5 },
 } as const satisfies Record<string, PuppetTheme>;
 
 // Joint dimensions. Must stay in sync with src/ragdoll.ts.
@@ -325,6 +332,12 @@ export class Puppet implements PuppetModel {
     }
     this.slotGroups[slot] = g;
     return g;
+  }
+
+  setPuppetTheme(theme: PuppetTheme) {
+    for (const m of this.skinMats) m.color.setHex(theme.skin);
+    for (const m of this.shirtMats) m.color.setHex(theme.shirt);
+    for (const m of this.hairMats) m.color.setHex(theme.hair);
   }
 
   // Idle blink. Called per-frame while the puppet is visible.
