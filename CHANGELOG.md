@@ -4,7 +4,14 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
-## 2026-10-11T07:28:00+05:30 — Add interactive Theme Switcher with 3 kids-friendly interfaces
+## 2026-10-11T07:40:00+05:30 — Fix input key collision with debug mode and randomize prompt chips on click
+
+- Changed: `src/main.ts`, `src/stage-chat.ts`, `index.html`
+- Why:
+  1. Typing in the chat box triggered the global 'd' key debug camera shortcut, causing the full-screen camera view to take over the screen. Added an input element guard to ignore debug shortcuts during typing.
+  2. Prompt chips were static. Expanded prompt pool to 18+ rich, playful items per theme and randomized them on every chip click and message submission, plus added an interactive 🎲 Shuffle button.
+- Validation: Verified typing 'd' or 'D' in chat input no longer triggers camera debug mode; verified prompt chips shuffle on every click and render properly; verified all 56 tests pass with `bun test`; deployed to production Vercel.
+- Limitations: None.
 
 - Changed: `src/theme.ts`, `src/theater.ts`, `src/puppet.ts`, `src/stage-chat.ts`, `src/landing.ts`, `src/main.ts`, `index.html`, `tests/theme.test.ts`
 - Why: Added an interactive, playful Theme Switcher button floating at top-right and on the preflight landing screen with 3 distinct kid-friendly interfaces:

@@ -76,6 +76,14 @@ function setDebugMode(mode: DebugMode) {
   else brain?.pause();
 }
 window.addEventListener("keydown", (e) => {
+  const target = e.target as HTMLElement | null;
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target?.isContentEditable
+  ) {
+    return;
+  }
   if (e.key === "d" || e.key === "D") {
     debugIdx = (debugIdx + 1) % DEBUG_MODES.length;
     setDebugMode(DEBUG_MODES[debugIdx]!);
