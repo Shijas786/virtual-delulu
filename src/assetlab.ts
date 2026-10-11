@@ -11,6 +11,7 @@ import { StagePuppet } from "./puppet-stage";
 import { Puppet, PUPPET_THEMES } from "./puppet";
 import { renderSpec } from "./assets/render";
 import { COSMETIC_NAMES, getCosmetic } from "./assets/catalog";
+import { getBackendHttpUrl } from "./config";
 import type { AssetSpec, SlotName } from "../server/protocol.ts";
 
 const canvas = document.getElementById("scene") as HTMLCanvasElement;
@@ -138,7 +139,7 @@ genButton.addEventListener("click", async () => {
   genButton.disabled = true;
   setStatus(`generating "${description}"…`);
   try {
-    const res = await fetch("/assetgen", {
+    const res = await fetch(`${getBackendHttpUrl()}/assetgen`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({

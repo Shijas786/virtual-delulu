@@ -4,6 +4,7 @@ import { StagePuppet } from "./puppet-stage";
 import { Puppet, PUPPET_THEMES } from "./puppet";
 import { Theater } from "./theater";
 import { Brain } from "./brain";
+import { getBackendWsUrl } from "./config";
 import { drawLandmarks } from "./landmarks";
 import {
   speak,
@@ -315,8 +316,8 @@ showLanding().then(async ({ stream, userPickedVoiceURI, brainSize }) => {
     setSelectedVoice(userPickedVoiceURI);
   }
 
-  const wsProto = location.protocol === "https:" ? "wss" : "ws";
-  const b = new Brain(`${wsProto}://${location.host}/ws?brain=${brainSize}`, {
+  const wsUrl = getBackendWsUrl(brainSize);
+  const b = new Brain(wsUrl, {
     onAction: (action) => {
       // Embodiment fields (say/emotion/gaze/gesture) go to the AI puppet
       // controller; scene-direction effects go to the SceneController.

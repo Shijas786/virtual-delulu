@@ -136,6 +136,7 @@ export function originAllowed(headers: Headers): boolean {
   if (!origin) return false;
   if (ALLOWED_ORIGINS.has(origin)) return true;
   if (/^https:\/\/virtual-delulu.*\.vercel\.app$/.test(origin)) return true;
+  if (/^https:\/\/.*\.trycloudflare\.com$/.test(origin)) return true;
   if (/^http:\/\/localhost(:\d+)?$/.test(origin)) return true;
   return false;
 }

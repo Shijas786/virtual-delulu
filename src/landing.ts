@@ -8,6 +8,7 @@
 // stage. This makes the failure modes addressable.
 
 import { onVoicesReady, installSpeechUnlock } from "./speech";
+import { getBackendHttpUrl } from "./config";
 import type { BrainSize } from "../server/protocol.ts";
 
 export type LandingResult = {
@@ -260,7 +261,7 @@ export function showLanding(): Promise<LandingResult> {
       installSpeechUnlock();
       // Try OpenAI server TTS first
       try {
-        const res = await fetch("/tts", {
+        const res = await fetch(`${getBackendHttpUrl()}/tts`, {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({

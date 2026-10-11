@@ -4,7 +4,12 @@ Record each meaningful project change during the event, newest first. Update thi
 
 ## Event build log
 
-## 2026-10-11T02:38:00+05:30 — Switch primary LLM model and 3D asset generator to GPT-6 Luna for faster latency
+## 2026-10-11T07:18:00+05:30 — Enable live web deployment support on Vercel via Cloudflare Tunnel & CORS
+
+- Changed: `src/config.ts`, `src/main.ts`, `src/speech.ts`, `src/landing.ts`, `src/assetlab.ts`, `server/index.ts`, `server/limits.ts`
+- Why: Vercel serverless hosting cannot maintain persistent WebSockets (`/ws`) or run background Bun servers. Added dynamic backend endpoint routing in `src/config.ts`, enabled CORS & preflight OPTIONS handling in `server/index.ts`, allowed tunnel origins in `server/limits.ts`, and connected the live production deployment on Vercel to a secure Cloudflare Tunnel endpoint.
+- Validation: Verified HTTP 101 WebSocket handshake and live `gpt-6-luna` completion over Cloudflare Tunnel; verified OPTIONS 204 preflight with `access-control-allow-origin`; verified 53 `bun test` passing; verified production build and deployment to `https://virtual-delulu.vercel.app`.
+- Limitations: When running on Vercel, the backend server process and tunnel must be running to handle live AI dialogues and TTS.
 
 - Changed: `server/index.ts`, `server/llm.ts`, `server/asset-generator.ts`, `server/openai.test.ts`, `index.html`, `.env`
 - Why: Switched large brain model and 3D asset generator to OpenAI `gpt-6-luna` for faster, low-latency puppet dialogues and rapid asset generation without wait times.

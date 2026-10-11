@@ -63,13 +63,36 @@ const server = Bun.serve<SocketData, string>({
   port: PORT,
   async fetch(req, srv) {
     const url = new URL(req.url);
+    const origin = req.headers.get("origin") || "";
+    const corsHeaders: Record<string, string> =
+      origin && originAllowed(req.headers)
+        ? {
+            "access-control-allow-origin": origin,
+            "access-control-allow-methods": "GET, POST, OPTIONS",
+            "access-control-allow-headers": "content-type, authorization",
+          }
+        : {};
+
+    if (req.method === "OPTIONS") {
+      if (origin && !originAllowed(req.headers)) {
+        return new Response("forbidden", { status: 403 });
+      }
+      return new Response(null, {
+        status: 204,
+        headers: {
+          ...corsHeaders,
+          "access-control-max-age": "86400",
+        },
+      });
+    }
+
     if (url.pathname === "/ws") {
       if (!originAllowed(req.headers)) {
-        return new Response("forbidden", { status: 403 });
+        return new Response("forbidden", { status: 403, headers: corsHeaders });
       }
       const ip = clientIpFrom(req.headers);
       if (!ipCounter.tryAcquire(ip)) {
-        return new Response("too many connections", { status: 429 });
+        return new Response("too many connections", { status: 429, headers: corsHeaders });
       }
       // Brain size travels in the WS query string — we need it at session
       // construction time (the opening prompt fires before any messages).
@@ -80,27 +103,44 @@ const server = Bun.serve<SocketData, string>({
       if (upgraded) return undefined;
       // Upgrade rejected for some other reason — release the slot we took.
       ipCounter.release(ip);
-      return new Response("upgrade failed", { status: 400 });
+      return new Response("upgrade failed", { status: 400, headers: corsHeaders });
     }
+
     if (url.pathname === "/health") {
-      return new Response("ok");
+      return new Response("ok", { headers: corsHeaders });
+    }
+
+    if (url.pathname === "/api/models") {
+      return new Response(
+        JSON.stringify({
+          large: USE_OPENAI ? MODEL_FOR_BRAIN_OPENAI.large : MODEL_FOR_BRAIN_ANTHROPIC.large,
+          small: USE_OPENAI ? MODEL_FOR_BRAIN_OPENAI.small : MODEL_FOR_BRAIN_ANTHROPIC.small,
+          backend: USE_OPENAI ? "openai" : "anthropic",
+        }),
+        {
+          headers: { "content-type": "application/json", ...corsHeaders },
+        },
+      );
     }
 
     if (url.pathname === "/assetgen" && req.method === "POST") {
       if (!originAllowed(req.headers)) {
-        return new Response("forbidden", { status: 403 });
+        return new Response("forbidden", { status: 403, headers: corsHeaders });
       }
       let body: { description?: unknown; mountKind?: unknown; slotOrAnchor?: unknown };
       try {
         body = (await req.json()) as typeof body;
       } catch {
-        return new Response("invalid json", { status: 400 });
+        return new Response("invalid json", { status: 400, headers: corsHeaders });
       }
       const description = typeof body.description === "string" ? body.description.trim() : "";
       const mountKind = body.mountKind === "cosmetic" || body.mountKind === "prop" ? body.mountKind : null;
       const slotOrAnchor = typeof body.slotOrAnchor === "string" ? body.slotOrAnchor : "";
       if (!description || !mountKind || !slotOrAnchor) {
-        return new Response("missing description, mountKind, or slotOrAnchor", { status: 400 });
+        return new Response("missing description, mountKind, or slotOrAnchor", {
+          status: 400,
+          headers: corsHeaders,
+        });
       }
       try {
         const spec = await assetGenerator.generate({
@@ -109,32 +149,32 @@ const server = Bun.serve<SocketData, string>({
           slotOrAnchor,
         });
         if (!spec) {
-          return new Response("generation failed", { status: 502 });
+          return new Response("generation failed", { status: 502, headers: corsHeaders });
         }
         return new Response(JSON.stringify({ spec }), {
-          headers: { "content-type": "application/json", "cache-control": "no-store" },
+          headers: { "content-type": "application/json", "cache-control": "no-store", ...corsHeaders },
         });
       } catch (err) {
         console.warn("[assetgen] error:", err);
-        return new Response("assetgen failed", { status: 502 });
+        return new Response("assetgen failed", { status: 502, headers: corsHeaders });
       }
     }
 
     if (url.pathname === "/tts" && req.method === "POST") {
       if (!originAllowed(req.headers)) {
-        return new Response("forbidden", { status: 403 });
+        return new Response("forbidden", { status: 403, headers: corsHeaders });
       }
       let text: string;
       try {
         const body = (await req.json()) as { text?: unknown };
         if (typeof body.text !== "string" || body.text.length === 0) {
-          return new Response("missing text", { status: 400 });
+          return new Response("missing text", { status: 400, headers: corsHeaders });
         }
         // The puppet's lines are short; cap at 600 to keep cost predictable
         // and reject obvious abuse.
         text = body.text.slice(0, 600);
       } catch {
-        return new Response("invalid json", { status: 400 });
+        return new Response("invalid json", { status: 400, headers: corsHeaders });
       }
       try {
         const audio = await synthesize(text);
@@ -142,11 +182,12 @@ const server = Bun.serve<SocketData, string>({
           headers: {
             "content-type": "audio/mpeg",
             "cache-control": "no-store",
+            ...corsHeaders,
           },
         });
       } catch (err) {
         console.warn("[tts] synthesize failed:", err);
-        return new Response("tts failed", { status: 502 });
+        return new Response("tts failed", { status: 502, headers: corsHeaders });
       }
     }
 

@@ -5,6 +5,8 @@
 // Serializes sequential replies so a new utterance waits for the current
 // one to finish instead of cutting it off mid-sentence.
 
+import { getBackendHttpUrl } from "./config";
+
 // voiceURI chosen by the server via Claude. Null until the server picks
 // (or if the pick failed / returned no suitable voice). When null we fall
 // back to the regex heuristic.
@@ -154,7 +156,7 @@ function speakNow(text: string) {
 async function speakNowEleven(text: string) {
   let url: string | null = null;
   try {
-    const res = await fetch("/tts", {
+    const res = await fetch(`${getBackendHttpUrl()}/tts`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ text }),
